@@ -1,0 +1,166 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
+            <h1 class="display-4 mb-4">Breast Cancer Prediction</h1>
+            <p class="lead mb-5">Enter the tumor characteristics below to get a prediction about breast cancer risk.</p>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card disease-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body p-4">
+                    <form action="{{ url_for('predictPage') }}" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="radius_mean">Radius Mean (mm)</label>
+                                    <input type="number" step="0.1" class="form-control" id="radius_mean" name="radius_mean" placeholder="Enter radius mean" value="{{ radius_mean if radius_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="texture_mean">Texture Mean</label>
+                                    <input type="number" step="0.1" class="form-control" id="texture_mean" name="texture_mean" placeholder="Enter texture mean" value="{{ texture_mean if texture_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="perimeter_mean">Perimeter Mean (mm)</label>
+                                    <input type="number" step="0.1" class="form-control" id="perimeter_mean" name="perimeter_mean" placeholder="Enter perimeter mean" value="{{ perimeter_mean if perimeter_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="area_mean">Area Mean (mm²)</label>
+                                    <input type="number" step="0.1" class="form-control" id="area_mean" name="area_mean" placeholder="Enter area mean" value="{{ area_mean if area_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="smoothness_mean">Smoothness Mean</label>
+                                    <input type="number" step="0.0001" class="form-control" id="smoothness_mean" name="smoothness_mean" placeholder="Enter smoothness mean" value="{{ smoothness_mean if smoothness_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="compactness_mean">Compactness Mean</label>
+                                    <input type="number" step="0.0001" class="form-control" id="compactness_mean" name="compactness_mean" placeholder="Enter compactness mean" value="{{ compactness_mean if compactness_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="concavity_mean">Concavity Mean</label>
+                                    <input type="number" step="0.0001" class="form-control" id="concavity_mean" name="concavity_mean" placeholder="Enter concavity mean" value="{{ concavity_mean if concavity_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="concave_points_mean">Concave Points Mean</label>
+                                    <input type="number" step="0.0001" class="form-control" id="concave_points_mean" name="concave_points_mean" placeholder="Enter concave points mean" value="{{ concave_points_mean if concave_points_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="symmetry_mean">Symmetry Mean</label>
+                                    <input type="number" step="0.0001" class="form-control" id="symmetry_mean" name="symmetry_mean" placeholder="Enter symmetry mean" value="{{ symmetry_mean if symmetry_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fractal_dimension_mean">Fractal Dimension Mean</label>
+                                    <input type="number" step="0.0001" class="form-control" id="fractal_dimension_mean" name="fractal_dimension_mean" placeholder="Enter fractal dimension mean" value="{{ fractal_dimension_mean if fractal_dimension_mean is defined else '' }}" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="submit" class="btn btn-custom btn-lg">Predict</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if prediction or (radius_mean is defined and radius_mean is not none) %}
+    <div class="row justify-content-center mt-5">
+        <div class="col-lg-8">
+            <div class="card disease-card" data-aos="fade-up">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4">Results</h3>
+                    {% if prediction %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="result-item">
+                                <h5>Prediction:</h5>
+                                <p class="prediction-text {% if prediction == 'Malignant' %}text-danger{% else %}text-success{% endif %}">
+                                    {{ prediction }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="result-item">
+                                <h5>Confidence:</h5>
+                                <p>{{ confidence }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    <div class="mt-4">
+                        <h5>Your Health Data:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <td>Radius Mean</td>
+                                        <td>{{ radius_mean }} mm</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Texture Mean</td>
+                                        <td>{{ texture_mean }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Perimeter Mean</td>
+                                        <td>{{ perimeter_mean }} mm</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Area Mean</td>
+                                        <td>{{ area_mean }} mm²</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Smoothness Mean</td>
+                                        <td>{{ smoothness_mean }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Compactness Mean</td>
+                                        <td>{{ compactness_mean }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Concavity Mean</td>
+                                        <td>{{ concavity_mean }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Concave Points Mean</td>
+                                        <td>{{ concave_points_mean }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Symmetry Mean</td>
+                                        <td>{{ symmetry_mean }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fractal Dimension Mean</td>
+                                        <td>{{ fractal_dimension_mean }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,34 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
+            <h1 class="display-4 mb-4">Malaria Prediction</h1>
+            <p class="lead mb-5">Upload a blood smear image to get a prediction about malaria infection.</p>
+        </div>
+    </div>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card disease-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="card-body p-4">
+                    <form action="{{ url_for('predictPage') }}" method="POST" enctype="multipart/form-data">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label for="image">Blood Smear Image</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                                    <small class="form-text text-muted">Please upload a clear image of the blood smear</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-custom">Predict</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

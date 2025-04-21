@@ -1,0 +1,107 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card disease-card" data-aos="fade-up">
+                <div class="card-body p-4">
+                    <h3 class="text-center mb-4">{{ disease_type|title }} Prediction Results</h3>
+                    
+                    {% if pred is defined %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="result-item">
+                                <h5>Prediction:</h5>
+                                <p class="prediction-text {% if pred == 1 %}text-danger{% else %}text-success{% endif %}">
+                                    {% if disease_type == 'diabetes' %}
+                                        {% if pred == 1 %}Positive for Diabetes{% else %}Negative for Diabetes{% endif %}
+                                    {% elif disease_type == 'cancer' %}
+                                        {% if pred == 1 %}Malignant{% else %}Benign{% endif %}
+                                    {% elif disease_type == 'heart' %}
+                                        {% if pred == 1 %}Positive for Heart Disease{% else %}Negative for Heart Disease{% endif %}
+                                    {% elif disease_type == 'kidney' %}
+                                        {% if pred == 1 %}Positive for Kidney Disease{% else %}Negative for Kidney Disease{% endif %}
+                                    {% elif disease_type == 'liver' %}
+                                        {% if pred == 1 %}Positive for Liver Disease{% else %}Negative for Liver Disease{% endif %}
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="result-item">
+                                <h5>Model Confidence:</h5>
+                                <div class="confidence-display">
+                                    <div class="progress" style="height: 25px;">
+                                        <div class="progress-bar {% if pred == 1 %}bg-danger{% else %}bg-success{% endif %}" 
+                                             role="progressbar" 
+                                             style="width: {{ confidence }}%;" 
+                                             aria-valuenow="{{ confidence }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {{ confidence }}%
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="mt-4">
+                        <h5>Your Health Data:</h5>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    {% for key, value in form_data.items() %}
+                                    <tr>
+                                        <td>{{ key.replace('_', ' ').title() }}</td>
+                                        <td>
+                                            {% if key in ['age', 'pregnancies'] %}
+                                                {{ value }} years
+                                            {% elif key in ['glucose', 'bloodpressure', 'skinthickness', 'insulin'] %}
+                                                {{ value }} mg/dL
+                                            {% elif key in ['bmi'] %}
+                                                {{ value }} kg/m²
+                                            {% elif key in ['radius_mean', 'perimeter_mean'] %}
+                                                {{ value }} mm
+                                            {% elif key in ['area_mean'] %}
+                                                {{ value }} mm²
+                                            {% else %}
+                                                {{ value }}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('home') }}" class="btn btn-custom">Back to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.confidence-display {
+    margin-top: 10px;
+}
+.progress {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.progress-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    transition: width 0.6s ease;
+}
+</style>
+{% endblock %}
