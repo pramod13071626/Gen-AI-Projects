@@ -185,16 +185,19 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#home">Home</a>
+                        <a class="nav-link" href="{{ url_for('home') }}">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#predictors">Disease Predictors</a>
+                        <a class="nav-link" href="{{ url_for('home') }}#predictors">Disease Predictors</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
+                        <a class="nav-link" href="{{ url_for('about') }}">About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
+                        <a class="nav-link" href="{{ url_for('contact') }}">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('healthcare_assistant') }}">Healthcare Assistant</a>
                     </li>
                 </ul>
             </div>
@@ -237,7 +240,7 @@
                             </div>
                             <h5 class="card-title">Diabetes Predictor</h5>
                             <p class="card-text">Advanced ML model for diabetes prediction using patient data and medical history.</p>
-                            <a href="http://127.0.0.1:5000/diabetes" class="btn btn-custom">Try Predictor</a>
+                            <a href="{{ url_for('diabetes') }}" class="btn btn-custom">Try Predictor</a>
                         </div>
                     </div>
                 </div>
@@ -252,7 +255,7 @@
                             </div>
                             <h5 class="card-title">Breast Cancer Predictor</h5>
                             <p class="card-text">Early detection system for breast cancer using advanced ML algorithms.</p>
-                            <a href="http://127.0.0.1:5000/cancer" class="btn btn-custom">Try Predictor</a>
+                            <a href="{{ url_for('cancer') }}" class="btn btn-custom">Try Predictor</a>
                         </div>
                     </div>
                 </div>
@@ -266,8 +269,68 @@
                                 <i class="fas fa-heartbeat"></i>
                             </div>
                             <h5 class="card-title">Heart Disease Predictor</h5>
-                            <p class="card-text">Comprehensive heart disease risk assessment using patient data.</p>
-                            <a href="http://127.0.0.1:5000/heart" class="btn btn-custom">Try Predictor</a>
+                            <p class="card-text">Comprehensive heart disease risk assessment using ML technology.</p>
+                            <a href="{{ url_for('heart') }}" class="btn btn-custom">Try Predictor</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Kidney Disease Card -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                    <div class="card disease-card h-100">
+                        <div class="card-body">
+                            <span class="accuracy-badge">99% Accuracy</span>
+                            <div class="feature-icon">
+                                <i class="fas fa-kidneys"></i>
+                            </div>
+                            <h5 class="card-title">Kidney Disease Predictor</h5>
+                            <p class="card-text">Early detection of kidney disease using advanced ML algorithms.</p>
+                            <a href="{{ url_for('kidney') }}" class="btn btn-custom">Try Predictor</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Liver Disease Card -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
+                    <div class="card disease-card h-100">
+                        <div class="card-body">
+                            <span class="accuracy-badge">78% Accuracy</span>
+                            <div class="feature-icon">
+                                <i class="fas fa-liver"></i>
+                            </div>
+                            <h5 class="card-title">Liver Disease Predictor</h5>
+                            <p class="card-text">Comprehensive liver disease risk assessment using ML technology.</p>
+                            <a href="{{ url_for('liver') }}" class="btn btn-custom">Try Predictor</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Malaria Card -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
+                    <div class="card disease-card h-100">
+                        <div class="card-body">
+                            <span class="accuracy-badge">96% Accuracy</span>
+                            <div class="feature-icon">
+                                <i class="fas fa-bug"></i>
+                            </div>
+                            <h5 class="card-title">Malaria Predictor</h5>
+                            <p class="card-text">Early detection of malaria using advanced ML algorithms.</p>
+                            <a href="{{ url_for('malaria') }}" class="btn btn-custom">Try Predictor</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Pneumonia Card -->
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="700">
+                    <div class="card disease-card h-100">
+                        <div class="card-body">
+                            <span class="accuracy-badge">95% Accuracy</span>
+                            <div class="feature-icon">
+                                <i class="fas fa-lungs"></i>
+                            </div>
+                            <h5 class="card-title">Pneumonia Predictor</h5>
+                            <p class="card-text">Early detection of pneumonia using advanced ML algorithms.</p>
+                            <a href="{{ url_for('pneumonia') }}" class="btn btn-custom">Try Predictor</a>
                         </div>
                     </div>
                 </div>
