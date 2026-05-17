@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container" style="position: relative;">
+  <div aria-hidden="true" style="position:absolute; inset:0; background:url('/static/background_1.jpg') center/cover no-repeat; opacity:0.08; border-radius:16px;"></div>
+  <h2 class="mb-3" style="position:relative;">Admin Dashboard</h2>
+
+  <div class="row g-3">
+    <div class="col-md-3"><div class="p-3 bg-light rounded">Users: <b>{{ stats.users }}</b></div></div>
+    <div class="col-md-3"><div class="p-3 bg-light rounded">Predictions: <b>{{ stats.predictions }}</b></div></div>
+    <div class="col-md-3"><div class="p-3 bg-light rounded">Chat Logs: <b>{{ stats.chats }}</b></div></div>
+    <div class="col-md-3"><div class="p-3 bg-light rounded">Reports: <b>{{ stats.reports }}</b></div></div>
+  </div>
+
+  <div class="mt-4 row g-3">
+    <div class="col-md-3"><a class="btn btn-custom w-100" href="{{ url_for('admin.users') }}">Users</a></div>
+    <div class="col-md-3"><a class="btn btn-custom w-100" href="{{ url_for('admin.predictions') }}">Predictions</a></div>
+    <div class="col-md-3"><a class="btn btn-custom w-100" href="{{ url_for('admin.chatlogs') }}">Chat Logs</a></div>
+  </div>
+</div>
+{% endblock %}
+

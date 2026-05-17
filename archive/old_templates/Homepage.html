@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Home - AI MedDiagnostics{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">AI-Powered Medical Diagnostics</h1>
+                <p class="lead mb-4">Get accurate health predictions and consultations using advanced artificial intelligence technology.</p>
+                <a href="/HealthCareAssistant" class="btn btn-light btn-lg">
+                    <i class="fas fa-robot me-2"></i>Try AI Assistant
+                </a>
+            </div>
+            <div class="col-lg-6">
+                <img src="/static/hero-image.png" alt="Medical AI" class="img-fluid rounded-3 shadow">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-5">Our Services</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3>AI Healthcare Assistant</h3>
+                <p>Get instant medical advice and symptom analysis from our advanced AI assistant.</p>
+                <a href="/HealthCareAssistant" class="btn btn-primary mt-3">Try Now</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h3>Heart Disease Detection</h3>
+                <p>Early detection of heart disease using advanced machine learning algorithms.</p>
+                <a href="/HeartDisease" class="btn btn-primary mt-3">Check Now</a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-virus"></i>
+                </div>
+                <h3>COVID-19 Prediction</h3>
+                <p>Quick assessment of COVID-19 risk based on symptoms and exposure history.</p>
+                <a href="/CoronavirusPrediction" class="btn btn-primary mt-3">Test Now</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-5">How It Works</h2>
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h4>1. Sign Up</h4>
+                <p>Create your account to access all features</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h4>2. Input Data</h4>
+                <p>Enter your symptoms or medical data</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4>3. AI Analysis</h4>
+                <p>Our AI processes your information</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 p-4 text-center">
+                <div class="feature-icon">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <h4>4. Get Results</h4>
+                <p>Receive detailed analysis and recommendations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="container mb-5">
+    <h2 class="text-center mb-5">What Our Users Say</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="/static/user1.jpg" alt="User" class="rounded-circle me-3" width="50">
+                    <div>
+                        <h5 class="mb-0">John Smith</h5>
+                        <small class="text-muted">Patient</small>
+                    </div>
+                </div>
+                <p>"The AI assistant helped me understand my symptoms better and guided me to seek proper medical attention."</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="/static/user2.jpg" alt="User" class="rounded-circle me-3" width="50">
+                    <div>
+                        <h5 class="mb-0">Sarah Johnson</h5>
+                        <small class="text-muted">Healthcare Professional</small>
+                    </div>
+                </div>
+                <p>"As a healthcare provider, I find this tool extremely useful for preliminary assessments."</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="/static/user3.jpg" alt="User" class="rounded-circle me-3" width="50">
+                    <div>
+                        <h5 class="mb-0">Michael Brown</h5>
+                        <small class="text-muted">Regular User</small>
+                    </div>
+                </div>
+                <p>"The heart disease detection feature helped me catch potential issues early. Highly recommended!"</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="container mb-5">
+    <div class="card bg-primary text-white p-5 text-center">
+        <h2 class="mb-4">Ready to Take Control of Your Health?</h2>
+        <p class="lead mb-4">Start using our AI-powered diagnostics tools today</p>
+        <a href="/HealthCareAssistant" class="btn btn-light btn-lg">
+            <i class="fas fa-arrow-right me-2"></i>Get Started
+        </a>
+    </div>
+</section>
+{% endblock %}

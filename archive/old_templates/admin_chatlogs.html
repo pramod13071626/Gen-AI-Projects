@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container" style="position: relative;">
+  <div aria-hidden="true" style="position:absolute; inset:0; background:url('/static/assistant.jpg') center/cover no-repeat; opacity:0.06;"></div>
+  <h2 class="mb-3" style="position:relative;">Admin - Chat Logs</h2>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Time</th>
+          <th>User ID</th>
+          <th>User Message</th>
+          <th>Bot Response</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in logs %}
+          <tr>
+            <td>{{ l.chat_time }}</td>
+            <td>{{ l.user_id if l.user_id is not none else '-' }}</td>
+            <td style="max-width:260px;">{{ l.user_message }}</td>
+            <td style="max-width:340px;">{{ l.bot_response }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

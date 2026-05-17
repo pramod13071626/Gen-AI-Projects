@@ -1,0 +1,55 @@
+{% extends "main.html" %}
+{% block content %}
+<style>
+.auth-card{max-width:420px;margin:60px auto;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.auth-header{background:linear-gradient(135deg,#1a237e,#3498db);padding:30px;text-align:center;color:#fff}
+.auth-header i{font-size:2.5rem}
+.auth-header h2{margin:10px 0 0;font-weight:600}
+.auth-body{padding:30px}
+.input-group{margin-bottom:18px}
+.input-group .input-group-text{background:#f0f4ff;border-right:none}
+.input-group .form-control{border-left:none}
+.btn-gradient{background:linear-gradient(135deg,#1a237e,#3498db);color:#fff;border:none;width:100%;padding:12px;border-radius:8px;font-size:1rem;font-weight:600}
+.btn-gradient:hover{opacity:.9;color:#fff}
+</style>
+<div class="container">
+  <div class="auth-card card">
+    <div class="auth-header">
+      <i class="fas fa-heartbeat"></i>
+      <h2>Medilife</h2>
+      <p class="mb-0">Sign in to your account</p>
+    </div>
+    <div class="auth-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+      <form method="POST" id="loginForm" novalidate>
+        <div class="input-group mb-3">
+          <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+          <input type="email" name="email" class="form-control" placeholder="Email" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$">
+          <div class="invalid-feedback">Enter a valid email address</div>
+        </div>
+        <div class="input-group mb-3">
+          <span class="input-group-text"><i class="fas fa-lock"></i></span>
+          <input type="password" name="password" class="form-control" placeholder="Password" required>
+          <div class="invalid-feedback">Password is required</div>
+        </div>
+        <button type="submit" class="btn btn-gradient">Login</button>
+      </form>
+      <p class="text-center mt-3 mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+  if (!this.checkValidity()) {
+    e.preventDefault();
+    this.classList.add('was-validated');
+  }
+});
+</script>
+{% endblock %}

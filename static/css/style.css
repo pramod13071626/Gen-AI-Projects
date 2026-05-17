@@ -1725,6 +1725,23 @@ h1, h2, h3, h4, h5, h6 {
     overflow: hidden;
 }
 
+/* Fix: ensure homepage hero images are always visible */
+.medical-illustration-wrapper {
+    position: relative !important;
+    z-index: 2 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.medical-illustration-wrapper img {
+    position: relative !important;
+    z-index: 3 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: block;
+}
+
+
 .hero-section::before {
     content: '';
     position: absolute;

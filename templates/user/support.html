@@ -1,0 +1,89 @@
+{% extends "main.html" %}
+{% block content %}
+<div style="background: #f0f2f5; min-height: calc(100vh - 200px); padding: 40px 0;">
+  <div class="container">
+    <div class="row">
+      <!-- Submit Ticket -->
+      <div class="col-lg-5 mb-4">
+        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+          <div class="card-body p-4">
+            <h4 style="color: #1a237e; font-weight: 700; margin-bottom: 20px;">
+              <i class="fas fa-headset"></i> Raise a Ticket
+            </h4>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                    {{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form method="POST">
+              <div class="mb-3">
+                <label class="form-label fw-bold">Category</label>
+                <select class="form-select" name="category" required>
+                  <option value="complaint">Complaint</option>
+                  <option value="bug">Bug Report</option>
+                  <option value="feature">Feature Request</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-bold">Subject</label>
+                <input type="text" class="form-control" name="subject" placeholder="Brief description of your issue" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-bold">Description</label>
+                <textarea class="form-control" name="description" rows="5" placeholder="Describe your issue in detail..." required></textarea>
+              </div>
+              <button type="submit" class="btn w-100" style="background: #1a237e; color: white; font-weight: 600; padding: 12px;">
+                📩 Submit Ticket
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Tickets -->
+      <div class="col-lg-7">
+        <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+          <div class="card-body p-4">
+            <h4 style="color: #1a237e; font-weight: 700; margin-bottom: 20px;">
+              <i class="fas fa-ticket-alt"></i> My Tickets
+            </h4>
+
+            {% if tickets %}
+              {% for ticket in tickets %}
+              <div class="mb-3 p-3" style="background: #f8f9fa; border-radius: 10px; border-left: 4px solid {% if ticket.status == 'open' %}#f57c00{% elif ticket.status == 'in_progress' %}#1565c0{% elif ticket.status == 'resolved' %}#2e7d32{% else %}#757575{% endif %};">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 style="margin: 0; font-weight: 600;">{{ ticket.subject }}</h6>
+                    <small class="text-muted">{{ ticket.category | title }} • {{ ticket.created_at.strftime('%d %b %Y %H:%M') }}</small>
+                  </div>
+                  <span class="badge" style="background: {% if ticket.status == 'open' %}#fff3e0; color: #f57c00{% elif ticket.status == 'in_progress' %}#e3f2fd; color: #1565c0{% elif ticket.status == 'resolved' %}#e8f5e9; color: #2e7d32{% else %}#f5f5f5; color: #757575{% endif %}; padding: 5px 10px; font-size: 11px;">
+                    {{ ticket.status | replace('_', ' ') | title }}
+                  </span>
+                </div>
+                <p class="mt-2 mb-1" style="font-size: 13px; color: #555;">{{ ticket.description[:150] }}{% if ticket.description|length > 150 %}...{% endif %}</p>
+                {% if ticket.admin_response %}
+                <div class="mt-2 p-2" style="background: #e8f5e9; border-radius: 8px; font-size: 12px;">
+                  <strong style="color: #2e7d32;">Admin Response:</strong> {{ ticket.admin_response }}
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center p-4">
+                <p class="text-muted">No tickets yet. Submit one if you need help!</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

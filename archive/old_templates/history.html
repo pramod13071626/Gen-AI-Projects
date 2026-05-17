@@ -1,0 +1,36 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container">
+  <h2 class="mb-3">Prediction History</h2>
+
+  {% if predictions and predictions|length > 0 %}
+    <div class="table-responsive">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Disease</th>
+            <th>Result</th>
+            <th>Confidence</th>
+            <th>Risk Level</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in predictions %}
+            <tr>
+              <td>{{ p.prediction_date }}</td>
+              <td>{{ p.disease_name }}</td>
+              <td>{{ p.prediction_result }}</td>
+              <td>{{ p.confidence_score if p.confidence_score is not none else '-' }}%</td>
+              <td>{{ p.risk_level if p.risk_level else '-' }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="alert alert-info">No predictions found.</div>
+  {% endif %}
+</div>
+{% endblock %}
+

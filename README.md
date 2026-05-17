@@ -1,135 +1,161 @@
-# Medical Disease Predictor |  A Machine Learning Based Web Application
+# Medilife - AI-Powered Medical Diagnosis System
 
+A full-stack web application that uses Machine Learning and Deep Learning models to predict 7 major diseases. Built with Flask, PostgreSQL, and deployed on AWS EC2.
 
+## Features
 
+- Disease prediction for Diabetes, Breast Cancer, Heart Disease, Kidney Disease, Liver Disease, Malaria, and Pneumonia
+- AI Healthcare Chatbot powered by Ollama (qwen2.5-coder:7b)
+- User authentication and profile management
+- Admin dashboard with analytics and user management
+- Doctor management and appointment booking
+- Prediction history and health trends visualization
+- Feature importance explanations for predictions
+- Email notifications on prediction results
+- Auto-retraining system using collected prediction data
+- Multi-language support (English, Hindi, Marathi)
+- PDF report generation
+- Audit logging for user activities
 
-__Capstone-2: LPU | CAP347 CARGC0019__
+## Tech Stack
 
+- **Backend:** Flask, SQLAlchemy, Flask-Login
+- **Database:** PostgreSQL
+- **ML Models:** scikit-learn (RandomForestClassifier), TensorFlow/Keras (CNN)
+- **AI Chatbot:** Ollama (local LLM)
+- **Frontend:** HTML, Bootstrap 5, Chart.js
+- **Deployment:** AWS EC2
 
-![Pyhon 3.4](https://img.shields.io/badge/ide-Jupyter_notebook-blue.svg) ![Python](https://img.shields.io/badge/Language-Python-brightgreen.svg)  ![Frontend](https://img.shields.io/badge/Frontend-Bootstrap-purple.svg)  ![Frontend](https://img.shields.io/badge/Libraries-Streamlit-purple.svg)    ![Bootstrap](https://img.shields.io/badge/BaseEnvironment-AnacondaPrompt-brown.svg)   ![Bootstrap](https://img.shields.io/badge/Deployment-Github-yellow.svg)   ![Bootstrap](https://img.shields.io/badge/Debugging-LocalHost-blue.svg)  
-
-## Table of Content
-  * [Problem statment / Why this topic?](#Problem-statment)
-  * [Flow Chart / Archeticture](#Flow-chart)
-  * [Directory Tree](#directory-tree)
-  * [Quick start](#Quick-start)
-  * [Screenshots](#screenshots)
-  * [Technical Aspect](#technical-aspect)
-  * [Team](#team)
-  * [License](#license)
-  
-
-  • This repository consists of files required to deploy an ___WEB PAGE___ created with ___HTML, CSS, BOOTSTRAP, ML, DL___ on ___github.io___ platform.
-  
-  
-![Deep-Learning-vs-Machine-Learning](https://user-images.githubusercontent.com/62024355/120758532-95a9cc80-c52f-11eb-9e5f-2255cd9b8a6c.jpg)
-
-  
-## Problem Statment
-The proposed project would be very useful in the medical field. In the proposed project a machine learning- based web application would be created for medical diagnosis. For a medical diagnosis, a machine learning model would be developed and integrated with the created web application. The user would be able to upload his medical data on the web application. The web application would pass this data to a developed machine learning model for health disease detection. After detection of health disease, if the person wants to take advice from a doctor then he can fix the appointment on the web application. A chat(Email) option would be provided on the web application to provide the communication between the patient and the doctor.
-
-## Why this Project?
-Although, we know that humans can do the mistakes but machines doesnt. Plus we can check the predicted outcome accuracy with machine learning. So we go for Machine learning, Keeping this in mind we researched alot in the allopathic, homeopathy and ayurvedic data. Due to less research paper for the data set of patients in homeopathy and ayurvedic we go for allopathic data set that are avalible in Kaggle and UCI machine learning portals.
-  
-  
-## Flow chart
-Front-end UX/UI, Back-end Machine learning, Deep learning flow chart
-  
-
-![ml](https://user-images.githubusercontent.com/62024355/120781058-4fac3300-c546-11eb-83be-dfc8319fd2f3.png)
-  
-  
-  
-  
-## Directory Tree 
-```
-├── Pyhon notebooks code files
-├── trained models.pkl file
-├── static logos
-├── Templates
-│   ├── Home.html
-│   ├── contact.html
-│   ├── about us.html
-│   ├── services.html
-│   ├── css folder
-│   ├── js folder
-│   ├── images folder
-│   └── fonts folder
-│         ├── Diabetes
-│         ├── Breast Cancer
-│         ├── Heart Disease
-│         ├── Kidney Disease
-│         ├── Liver Disease
-│         ├── Malaria
-│         └── Pneumonia
-├── app.py
-├── readme.md
-├── runtime.txt
-└── requirements.txt
-
+## Project Structure
 
 ```
+├── app.py                     Main Flask application
+├── models.py                  SQLAlchemy database models (14 tables)
+├── db.py                      Database initialization
+├── auth.py                    Flask-Login setup
+├── retrain.py                 Auto-retraining system
+├── explainability.py          Feature importance explanations
+├── email_service.py           Email notifications
+├── translations.py            Multi-language support (en/hi/mr)
+├── routes_auth.py             Login / Register / Logout
+├── routes_user.py             User dashboard routes
+├── routes_admin.py            Admin panel routes
+├── routes_logging_api.py      Prediction & chat logging API
+├── routes_reports.py          PDF report generation
+├── requirements.txt           Python dependencies
+├── .env                       Environment variables
+├── .gitignore
+├── LICENSE
+│
+├── models/                    Trained ML models
+│   ├── diabetes.pkl
+│   ├── cancer.pkl
+│   ├── heart.pkl
+│   ├── kidney.pkl
+│   ├── liver.pkl
+│   ├── malaria.h5
+│   └── pneumonia.h5
+│
+├── templates/                 Jinja2 HTML templates
+│   ├── main.html              Base layout
+│   ├── index.html             Public home page
+│   ├── admin/                 Admin panel (9 templates)
+│   └── user/                  User dashboard (6 templates)
+│
+├── static/                    Static assets
+│   ├── css/style.css
+│   └── img/
+│
+├── diagrams/                  UML diagrams (PlantUML)
+├── Python Notebooks/          Model training notebooks
+└── archive/                   Old files (reference)
+```
 
-  
-  
-  
-## Quick start
-  
-**Step-1:** Download the files in the repository.<br>
-**Step-2:** Get into the downloaded folder, open command prompt in that directory and install all the dependencies using following command<br>
-```python
+## Setup
+
+1. Create a virtual environment:
+```bash
+python -m venv venv
+source venv/bin/activate        # Linux/Mac
+venv\Scripts\activate           # Windows
+```
+
+2. Install dependencies:
+```bash
 pip install -r requirements.txt
 ```
-**Step-3:** After successfull installation of all the dependencies, run the following command<br>
-```python
+
+3. Set up PostgreSQL database:
+```bash
+createdb medilife
+```
+
+4. Configure environment variables in `.env`:
+```
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@localhost:5432/medilife
+EMAIL_SENDER=your_email@gmail.com
+EMAIL_RECEIVER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+```
+
+5. Start Ollama (for AI chatbot):
+```bash
+ollama serve
+ollama pull qwen2.5-coder:7b
+```
+
+6. Run the application:
+```bash
 python app.py
 ```
 
-```python
-or
-flask run
-```
-**Step-4:** Go to the __New command prompt__ of root folder, run the following commands in new cmd terminal<br> 
-```
-cd templates
-index.html
-```
+The server will be available at `http://localhost:3000`
 
+## Database
 
-## Technical aspect
+14 tables in PostgreSQL with full relationship mapping and cascade deletes:
 
-This webapp was developed using Flask Web Framework. The models used to predict the diseases were trained on large Datasets. All the links for datasets and the python notebooks used for model creation are mentioned below in this readme. The webapp can predict following Diseases:
-* Diabetes
-* Breast Cancer
-* Heart Disease
-* Kidney Disease
-* Liver Disease
-* Malaria
-* Pneumonia
+| Table | Purpose |
+|-------|---------|
+| users | User accounts and profiles |
+| disease_predictions | All prediction records |
+| diabetes_data | Diabetes-specific input data |
+| heart_disease_data | Heart disease input data |
+| kidney_disease_data | Kidney disease input data |
+| liver_disease_data | Liver disease input data |
+| cancer_data | Cancer input data |
+| image_uploads | Malaria/Pneumonia images |
+| chatbot_history | AI chatbot conversations |
+| reports | Generated PDF reports |
+| complaints | User support tickets |
+| doctors | Doctor profiles |
+| appointments | User-doctor appointments |
+| audit_logs | Login/logout/prediction logs |
 
-__Models with their Accuracy of Prediction__
+## ML Models
 
-Disease | Type of Model | Accuracy
---- | --- | ---
-Diabetes | Machine Learning Model | 98.25%
-Breast Cancer | Machine Learning Model | 98.25%
-Heart Disease | Machine Learning Model | 85.25%
-Kidney Disease | Machine Learning Model | 99%
-Liver Disease | Machine Learning Model | 78%
-Malaria | Deep Learning Model(CNN) | 96%
-Pneumonia | Deep Learning Model(CNN) | 95%
+| Disease | Model Type | Accuracy |
+|---------|-----------|----------|
+| Diabetes | RandomForestClassifier | 98.25% |
+| Breast Cancer | RandomForestClassifier | 98.25% |
+| Heart Disease | RandomForestClassifier | 85.25% |
+| Kidney Disease | RandomForestClassifier | 99% |
+| Liver Disease | RandomForestClassifier | 78% |
+| Malaria | CNN (Deep Learning) | 96% |
+| Pneumonia | CNN (Deep Learning) | 95% |
 
-__NOTE__
-<br>
-==> Python version 3.6.8 was used for the whole project.<br>
+## API Endpoints
 
-__Links for Python Notebooks used for model creation__
-* [Diabetes Notebook](https://github.com/venugopalkadamba/Multi_Disease_Predictor/blob/master/Python%20Notebooks/Diabetes_Prediction.ipynb)
-* [Breast Cancer Notebook](https://github.com/venugopalkadamba/Multi_Disease_Predictor/blob/master/Python%20Notebooks/Cancer_Prediction.ipynb)
-* [Heart Disease Notebook](https://github.com/venugopalkadamba/Multi_Disease_Predictor/blob/master/Python%20Notebooks/Heart_Disease_Prediction.ipynb)
-* [Kidney Disease Notebook](https://github.com/venugopalkadamba/Multi_Disease_Predictor/blob/master/Python%20Notebooks/Kidney_Disease_Prediction.ipynb)
-* [Liver Disease Notebook](https://github.com/venugopalkadamba/Multi_Disease_Predictor/blob/master/Python%20Notebooks/Liver_Disease_Prediction.ipynb)
-
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /predict | Disease prediction |
+| POST | /chat | AI chatbot |
+| POST | /api/log/prediction | Log prediction to DB |
+| POST | /api/log/chat | Log chat to DB |
+| POST | /reports/generate | Generate PDF report |
+| POST | /admin/retrain | Trigger model retraining |
+| GET | /admin/retrain/status | Retraining status |
 
 ## License
-[![Apache license](https://img.shields.io/badge/license-apache-blue?style=for-the-badge&logo=appveyor)](http://www.apache.org/licenses/LICENSE-2.0e)
+
+Licensed under the Apache License, Version 2.0

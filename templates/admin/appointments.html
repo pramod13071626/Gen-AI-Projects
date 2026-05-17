@@ -1,0 +1,68 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Appointments{% endblock %}
+{% block content %}
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="kpi-card"><div class="kpi-label">Total</div><div class="kpi-value">{{ appointments | length }}</div></div></div>
+  <div class="col-md-3"><div class="kpi-card"><div class="kpi-label">Scheduled</div><div class="kpi-value" style="color:#2563eb;">{{ appointments | selectattr('status','equalto','scheduled') | list | length }}</div></div></div>
+  <div class="col-md-3"><div class="kpi-card"><div class="kpi-label">Completed</div><div class="kpi-value" style="color:#16a34a;">{{ appointments | selectattr('status','equalto','completed') | list | length }}</div></div></div>
+  <div class="col-md-3"><div class="kpi-card"><div class="kpi-label">Cancelled</div><div class="kpi-value" style="color:#dc2626;">{{ appointments | selectattr('status','equalto','cancelled') | list | length }}</div></div></div>
+</div>
+
+<div class="data-card">
+  <div class="card-body p-0">
+    <table class="admin-table">
+      <thead><tr><th>Patient</th><th>Doctor</th><th>Date & Time</th><th>Reason</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        {% for apt in appointments %}
+        <tr>
+          <td><strong>{{ apt.user.full_name }}</strong><br><small class="text-muted">{{ apt.user.email }}</small></td>
+          <td>Dr. {{ apt.doctor.name }}<br><small class="text-muted">{{ apt.doctor.specialization }}</small></td>
+          <td>{{ apt.appointment_date.strftime('%d %b %Y') }}<br><small>{{ apt.appointment_time }}</small></td>
+          <td><small>{{ apt.reason or '—' }}</small></td>
+          <td>
+            {% if apt.status == 'scheduled' %}<span class="badge-info">Scheduled</span>
+            {% elif apt.status == 'completed' %}<span class="badge-success">Completed</span>
+            {% elif apt.status == 'cancelled' %}<span class="badge-danger">Cancelled</span>
+            {% else %}<span class="badge-warning">{{ apt.status | title }}</span>{% endif %}
+          </td>
+          <td>
+            <button class="btn btn-admin btn-edit" data-bs-toggle="modal" data-bs-target="#editApt{{ apt.appointment_id }}"><i class="fas fa-edit"></i></button>
+          </td>
+        </tr>
+
+        <!-- Edit/Reschedule Modal -->
+        <div class="modal fade" id="editApt{{ apt.appointment_id }}" tabindex="-1">
+          <div class="modal-dialog"><div class="modal-content">
+            <div class="modal-header"><h6 class="modal-title">Update Appointment #{{ apt.appointment_id }}</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+            <form method="POST" action="{{ url_for('admin.update_appointment', apt_id=apt.appointment_id) }}">
+              <div class="modal-body">
+                <p class="text-muted" style="font-size:0.85rem;"><strong>{{ apt.user.full_name }}</strong> → Dr. {{ apt.doctor.name }}</p>
+                <div class="mb-3"><label class="form-label fw-bold">Status</label>
+                  <select class="form-select" name="status">
+                    <option value="scheduled" {% if apt.status=='scheduled' %}selected{% endif %}>Scheduled</option>
+                    <option value="completed" {% if apt.status=='completed' %}selected{% endif %}>Completed</option>
+                    <option value="cancelled" {% if apt.status=='cancelled' %}selected{% endif %}>Cancelled</option>
+                    <option value="rescheduled" {% if apt.status=='rescheduled' %}selected{% endif %}>Rescheduled</option>
+                  </select>
+                </div>
+                <div class="mb-3"><label class="form-label fw-bold">Reschedule Date</label><input type="date" class="form-control" name="date" value="{{ apt.appointment_date.isoformat() }}"></div>
+                <div class="mb-3"><label class="form-label fw-bold">Time</label>
+                  <select class="form-select" name="time">
+                    {% for t in ['09:00','10:00','11:00','14:00','15:00','16:00'] %}
+                    <option {% if apt.appointment_time == t %}selected{% endif %}>{{ t }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="modal-footer"><button type="submit" class="btn btn-admin btn-primary-admin">Update</button></div>
+            </form>
+          </div></div>
+        </div>
+        {% endfor %}
+        {% if not appointments %}<tr><td colspan="6" class="text-center text-muted py-4">No appointments yet.</td></tr>{% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

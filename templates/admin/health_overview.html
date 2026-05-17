@@ -1,0 +1,120 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Health Overview{% endblock %}
+{% block content %}
+<!-- KPI Cards per Disease -->
+<div class="row g-3 mb-4">
+  {% for disease, count, avg_conf, positive_count in disease_stats %}
+  <div class="col-md-3">
+    <div class="kpi-card">
+      <div class="kpi-label" style="text-transform: capitalize;">{{ disease }}</div>
+      <div class="d-flex justify-content-between align-items-end mt-1">
+        <div class="kpi-value" style="font-size: 1.3rem;">{{ count }}</div>
+        <div class="text-end">
+          <small style="color: #64748b;">Avg {{ "%.0f" | format(avg_conf or 0) }}%</small><br>
+          <small style="color: #dc2626;">{{ positive_count | int }} +ve</small>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="row g-4">
+  <!-- Pie Chart -->
+  <div class="col-lg-4">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-chart-pie me-2"></i>Disease Distribution</h6></div>
+      <div class="card-body"><canvas id="healthChart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Positive vs Negative -->
+  <div class="col-lg-4">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-chart-bar me-2"></i>Positive vs Negative</h6></div>
+      <div class="card-body"><canvas id="posNegChart" height="200"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Avg Confidence -->
+  <div class="col-lg-4">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-percentage me-2"></i>Avg Confidence by Disease</h6></div>
+      <div class="card-body"><canvas id="confChart" height="200"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4 mt-1">
+  <!-- Top Users -->
+  <div class="col-lg-12">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-trophy me-2"></i>Most Active Users</h6></div>
+      <div class="card-body p-0">
+        <table class="admin-table">
+          <thead><tr><th>User</th><th>Email</th><th>Tests</th></tr></thead>
+          <tbody>
+            {% for name, email, count in top_users %}
+            <tr><td><strong>{{ name }}</strong></td><td>{{ email }}</td><td><span class="badge-info">{{ count }}</span></td></tr>
+            {% endfor %}
+            {% if not top_users %}<tr><td colspan="3" class="text-center text-muted py-3">No activity yet.</td></tr>{% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Predictions Table -->
+<div class="data-card mt-4">
+  <div class="card-header"><h6><i class="fas fa-clock me-2"></i>Recent Predictions</h6></div>
+  <div class="card-body p-0">
+    <table class="admin-table">
+      <thead><tr><th>User</th><th>Disease</th><th>Result</th><th>Confidence</th><th>Date</th></tr></thead>
+      <tbody>
+        {% for p in recent %}
+        <tr>
+          <td>{{ p.user.full_name if p.user else 'Unknown' }}</td>
+          <td style="text-transform: capitalize;">{{ p.disease_name }}</td>
+          <td>{% if p.prediction_result == '1' %}<span class="badge-danger">Positive</span>{% else %}<span class="badge-success">Negative</span>{% endif %}</td>
+          <td>{{ "%.0f" | format(p.confidence_score) if p.confidence_score else 'N/A' }}%</td>
+          <td>{{ p.prediction_date.strftime('%d %b %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const stats = [{% for d, c, a, p in disease_stats %}{label:'{{ d }}',value:{{ c }},avg:{{ "%.1f" | format(a or 0) }},pos:{{ p | int }}},{% endfor %}];
+const labels = stats.map(s => s.label.charAt(0).toUpperCase() + s.label.slice(1));
+const colors = ['#3b82f6','#ef4444','#f59e0b','#10b981','#8b5cf6','#ec4899','#06b6d4'];
+
+new Chart(document.getElementById('healthChart'), {
+  type: 'doughnut',
+  data: { labels, datasets: [{ data: stats.map(s=>s.value), backgroundColor: colors, borderWidth: 0 }] },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+});
+
+new Chart(document.getElementById('posNegChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      { label: 'Positive', data: stats.map(s => s.pos), backgroundColor: '#ef4444', borderRadius: 4 },
+      { label: 'Negative', data: stats.map(s => s.value - s.pos), backgroundColor: '#10b981', borderRadius: 4 }
+    ]
+  },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 10 } } } }, scales: { x: { stacked: true, grid: { display: false }, ticks: { font: { size: 9 } } }, y: { stacked: true, beginAtZero: true, grid: { color: '#e2e8f0' } } } }
+});
+
+new Chart(document.getElementById('confChart'), {
+  type: 'bar',
+  data: { labels, datasets: [{ data: stats.map(s => s.avg), backgroundColor: colors, borderRadius: 6, borderSkipped: false }] },
+  options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw + '%' } } }, scales: { x: { min: 0, max: 100, grid: { color: '#e2e8f0' }, ticks: { callback: v => v + '%', font: { size: 10 } } }, y: { grid: { display: false }, ticks: { font: { size: 10, weight: '500' } } } } }
+});
+</script>
+{% endblock %}

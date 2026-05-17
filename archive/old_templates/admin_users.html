@@ -1,0 +1,35 @@
+{% extends "main.html" %}
+{% block content %}
+<div class="container" style="position: relative;">
+  <div aria-hidden="true" style="position:absolute; inset:0; background:url('/static/health.gif') center/cover no-repeat; opacity:0.06;"></div>
+  <h2 class="mb-3" style="position:relative;">Admin - Users</h2>
+
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Created</th>
+          <th>Admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+          <tr>
+            <td>{{ u.user_id }}</td>
+            <td>{{ u.full_name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.phone if u.phone else '-' }}</td>
+            <td>{{ u.created_at }}</td>
+            <td>{{ 'Yes' if u.is_admin else 'No' }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+

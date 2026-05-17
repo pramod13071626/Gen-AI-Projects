@@ -1,0 +1,135 @@
+{% extends "main.html" %}
+{% block content %}
+<div style="background: #f0f2f5; min-height: calc(100vh - 200px); padding: 40px 0;">
+  <div class="container">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2 style="color: #1a237e; font-weight: 700;">📋 Prediction History</h2>
+        <p class="text-muted mb-0">Your past disease screening results</p>
+      </div>
+      <div>
+        <a href="{{ url_for('user.profile') }}" class="btn" style="background: #e8eaf6; color: #1a237e; font-weight: 600;">👤 Profile</a>
+        <a href="{{ url_for('home') }}" class="btn" style="background: #1a237e; color: white; font-weight: 600;">🏠 Home</a>
+      </div>
+    </div>
+
+    {% if predictions %}
+    <!-- Stats Summary -->
+    <div class="row mb-4">
+      <div class="col-md-3 mb-2">
+        <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px;">
+          <h3 style="color: #1a237e; margin: 0;">{{ predictions | length }}</h3>
+          <small class="text-muted">Total Tests</small>
+        </div>
+      </div>
+      <div class="col-md-3 mb-2">
+        <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px;">
+          <h3 style="color: #2e7d32; margin: 0;">{{ predictions | selectattr('prediction_result', 'equalto', '0') | list | length }}</h3>
+          <small class="text-muted">Negative</small>
+        </div>
+      </div>
+      <div class="col-md-3 mb-2">
+        <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px;">
+          <h3 style="color: #c62828; margin: 0;">{{ predictions | selectattr('prediction_result', 'equalto', '1') | list | length }}</h3>
+          <small class="text-muted">Positive</small>
+        </div>
+      </div>
+      <div class="col-md-3 mb-2">
+        <div class="card border-0 shadow-sm text-center p-3" style="border-radius: 12px;">
+          <h3 style="color: #f57c00; margin: 0;">{{ predictions[0].prediction_date.strftime('%d %b') if predictions else 'N/A' }}</h3>
+          <small class="text-muted">Last Test</small>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0">
+            <thead style="background: #1a237e; color: white;">
+              <tr>
+                <th style="padding: 15px; border: none;">#</th>
+                <th style="padding: 15px; border: none;">Disease</th>
+                <th style="padding: 15px; border: none;">Result</th>
+                <th style="padding: 15px; border: none;">Confidence</th>
+                <th style="padding: 15px; border: none;">Risk Level</th>
+                <th style="padding: 15px; border: none;">Date</th>
+                <th style="padding: 15px; border: none;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for pred in predictions %}
+              <tr>
+                <td style="padding: 12px 15px; vertical-align: middle;">{{ loop.index }}</td>
+                <td style="padding: 12px 15px; vertical-align: middle;">
+                  <strong style="text-transform: capitalize;">{{ pred.disease_name }}</strong>
+                </td>
+                <td style="padding: 12px 15px; vertical-align: middle;">
+                  {% if pred.prediction_result == '1' %}
+                    <span class="badge" style="background: #ffebee; color: #c62828; padding: 6px 12px; font-size: 12px;">⚠️ Positive</span>
+                  {% elif pred.prediction_result == '0' %}
+                    <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 6px 12px; font-size: 12px;">✅ Negative</span>
+                  {% else %}
+                    <span class="badge bg-secondary">{{ pred.prediction_result }}</span>
+                  {% endif %}
+                </td>
+                <td style="padding: 12px 15px; vertical-align: middle;">
+                  {% if pred.confidence_score %}
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      <div style="width: 60px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden;">
+                        <div style="width: {{ pred.confidence_score }}%; height: 100%; background: {% if pred.confidence_score >= 80 %}#2e7d32{% elif pred.confidence_score >= 60 %}#f57c00{% else %}#c62828{% endif %}; border-radius: 3px;"></div>
+                      </div>
+                      <strong>{{ "%.1f" | format(pred.confidence_score) }}%</strong>
+                    </div>
+                  {% else %}
+                    <span class="text-muted">N/A</span>
+                  {% endif %}
+                </td>
+                <td style="padding: 12px 15px; vertical-align: middle;">
+                  {% if pred.risk_level %}
+                    {% if 'high' in pred.risk_level | lower %}
+                      <span class="badge" style="background: #c62828; color: white; padding: 4px 10px;">{{ pred.risk_level | upper }}</span>
+                    {% elif 'moderate' in pred.risk_level | lower %}
+                      <span class="badge" style="background: #f57c00; color: white; padding: 4px 10px;">{{ pred.risk_level | upper }}</span>
+                    {% else %}
+                      <span class="badge" style="background: #2e7d32; color: white; padding: 4px 10px;">{{ pred.risk_level | upper }}</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="text-muted">-</span>
+                  {% endif %}
+                </td>
+                <td style="padding: 12px 15px; vertical-align: middle;">
+                  <small>{{ pred.prediction_date.strftime('%d %b %Y') }}<br>{{ pred.prediction_date.strftime('%I:%M %p') }}</small>
+                </td>
+                <td style="padding: 12px 15px; vertical-align: middle;">
+                  {% if pred.form_data %}
+                  <a href="{{ url_for('user.view_report', prediction_id=pred.prediction_id) }}" class="btn btn-sm" style="background: #e8eaf6; color: #1a237e; font-weight: 600;" title="View Full Report">
+                    📄 View
+                  </a>
+                  {% endif %}
+                  <a href="{{ url_for('user.view_report', prediction_id=pred.prediction_id) }}" target="_blank" class="btn btn-sm" style="background: #fff3e0; color: #e65100; font-weight: 600;" title="Print Report" onclick="setTimeout(function(){window.open(this.href).print()},500); return true;">
+                    🖨️
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {% else %}
+    <!-- Empty State -->
+    <div class="card border-0 shadow-sm text-center p-5" style="border-radius: 15px;">
+      <div style="font-size: 4rem; margin-bottom: 15px;">🔬</div>
+      <h4 style="color: #2c3e50;">No Predictions Yet</h4>
+      <p class="text-muted">You haven't made any disease screenings yet. Start your first test now!</p>
+      <a href="{{ url_for('home') }}" class="btn px-4 py-2" style="background: #1a237e; color: white; font-weight: 600; border-radius: 8px;">Start Screening</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

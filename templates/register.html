@@ -1,0 +1,96 @@
+{% extends "main.html" %}
+{% block content %}
+<style>
+.auth-card{max-width:520px;margin:40px auto;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.auth-header{background:linear-gradient(135deg,#1a237e,#3498db);padding:30px;text-align:center;color:#fff}
+.auth-header i{font-size:2.5rem}
+.auth-header h2{margin:10px 0 0;font-weight:600}
+.auth-body{padding:30px}
+.btn-gradient{background:linear-gradient(135deg,#1a237e,#3498db);color:#fff;border:none;width:100%;padding:12px;border-radius:8px;font-size:1rem;font-weight:600}
+.btn-gradient:hover{opacity:.9;color:#fff}
+</style>
+<div class="container">
+  <div class="auth-card card">
+    <div class="auth-header">
+      <i class="fas fa-heartbeat"></i>
+      <h2>Medilife</h2>
+      <p class="mb-0">Create your account</p>
+    </div>
+    <div class="auth-body">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+      <form method="POST" id="registerForm" novalidate>
+        <div class="mb-3">
+          <input type="text" name="full_name" class="form-control" placeholder="Full Name" required pattern="^[a-zA-Z\s.\-]{2,}$" title="Only letters, spaces, dots and hyphens (min 2 chars)">
+          <div class="invalid-feedback">Only letters, spaces, dots and hyphens allowed (min 2 characters)</div>
+        </div>
+        <div class="mb-3">
+          <input type="email" name="email" class="form-control" placeholder="Email" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address">
+          <div class="invalid-feedback">Enter a valid email (e.g. user@example.com)</div>
+        </div>
+        <div class="mb-3">
+          <input type="password" name="password" class="form-control" placeholder="Password" required minlength="6" title="Min 6 chars with at least one letter and one number">
+          <div class="invalid-feedback">Min 6 characters, must include a letter and a number</div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6">
+            <input type="number" name="age" class="form-control" placeholder="Age" required min="1" max="120">
+            <div class="invalid-feedback">Age must be 1-120</div>
+          </div>
+          <div class="col-6">
+            <select name="gender" class="form-select" required>
+              <option value="" disabled selected>Gender</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-6">
+            <input type="tel" name="phone" class="form-control" placeholder="Phone (10 digits)" required pattern="^[\d]{10}$" title="Enter 10 digit phone number">
+            <div class="invalid-feedback">Enter a valid 10-digit phone number</div>
+          </div>
+          <div class="col-6">
+            <select name="blood_group" class="form-select" required>
+              <option value="" disabled selected>Blood Group</option>
+              <option>A+</option><option>A-</option>
+              <option>B+</option><option>B-</option>
+              <option>AB+</option><option>AB-</option>
+              <option>O+</option><option>O-</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <input type="text" name="emergency_contact" class="form-control" placeholder="Emergency Contact" required>
+        </div>
+        <div class="mb-3">
+          <textarea name="address" class="form-control" placeholder="Address" rows="2" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-gradient">Register</button>
+      </form>
+      <p class="text-center mt-3 mb-0">Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></p>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+  const form = this;
+  const pw = form.querySelector('[name="password"]');
+  if (pw.value.length >= 6 && (/[A-Za-z]/.test(pw.value)) && (/\d/.test(pw.value))) {
+    pw.setCustomValidity('');
+  } else {
+    pw.setCustomValidity('Password must be at least 6 chars with a letter and number');
+  }
+  if (!form.checkValidity()) {
+    e.preventDefault();
+    form.classList.add('was-validated');
+  }
+});
+</script>
+{% endblock %}

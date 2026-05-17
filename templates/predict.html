@@ -1,107 +1,718 @@
 {% extends "main.html" %}
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card disease-card" data-aos="fade-up">
-                <div class="card-body p-4">
-                    <h3 class="text-center mb-4">{{ disease_type|title }} Prediction Results</h3>
-                    
-                    {% if pred is defined %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="result-item">
-                                <h5>Prediction:</h5>
-                                <p class="prediction-text {% if pred == 1 %}text-danger{% else %}text-success{% endif %}">
-                                    {% if disease_type == 'diabetes' %}
-                                        {% if pred == 1 %}Positive for Diabetes{% else %}Negative for Diabetes{% endif %}
-                                    {% elif disease_type == 'cancer' %}
-                                        {% if pred == 1 %}Malignant{% else %}Benign{% endif %}
-                                    {% elif disease_type == 'heart' %}
-                                        {% if pred == 1 %}Positive for Heart Disease{% else %}Negative for Heart Disease{% endif %}
-                                    {% elif disease_type == 'kidney' %}
-                                        {% if pred == 1 %}Positive for Kidney Disease{% else %}Negative for Kidney Disease{% endif %}
-                                    {% elif disease_type == 'liver' %}
-                                        {% if pred == 1 %}Positive for Liver Disease{% else %}Negative for Liver Disease{% endif %}
-                                    {% endif %}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="result-item">
-                                <h5>Model Confidence:</h5>
-                                <div class="confidence-display">
-                                    <div class="progress" style="height: 25px;">
-                                        <div class="progress-bar {% if pred == 1 %}bg-danger{% else %}bg-success{% endif %}" 
-                                             role="progressbar" 
-                                             style="width: {{ confidence }}%;" 
-                                             aria-valuenow="{{ confidence }}" 
-                                             aria-valuemin="0" 
-                                             aria-valuemax="100">
-                                            {{ confidence }}%
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                    <div class="mt-4">
-                        <h5>Your Health Data:</h5>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    {% for key, value in form_data.items() %}
-                                    <tr>
-                                        <td>{{ key.replace('_', ' ').title() }}</td>
-                                        <td>
-                                            {% if key in ['age', 'pregnancies'] %}
-                                                {{ value }} years
-                                            {% elif key in ['glucose', 'bloodpressure', 'skinthickness', 'insulin'] %}
-                                                {{ value }} mg/dL
-                                            {% elif key in ['bmi'] %}
-                                                {{ value }} kg/m²
-                                            {% elif key in ['radius_mean', 'perimeter_mean'] %}
-                                                {{ value }} mm
-                                            {% elif key in ['area_mean'] %}
-                                                {{ value }} mm²
-                                            {% else %}
-                                                {{ value }}
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <a href="{{ url_for('home') }}" class="btn btn-custom">Back to Home</a>
-                    </div>
+<div class="report-page">
+    <div class="report-container" id="reportContent">
+        <!-- Hospital Header -->
+        <div class="report-header">
+            <div class="hospital-logo">
+                <img src="{{ url_for('static', filename='logo1.png') }}" alt="Medilife" class="logo-img">
+            </div>
+            <div class="hospital-info">
+                <h1 class="hospital-name">MEDILIFE DIAGNOSTIC CENTER</h1>
+                <p class="hospital-tagline">AI-Powered Medical Diagnostics Laboratory</p>
+                <p class="hospital-address">Advanced Healthcare Solutions | NABL Accredited</p>
+                <p class="hospital-contact">📞 +91-XXXXXXXXXX | ✉ reports@medilife.in</p>
+            </div>
+            <div class="report-qr">
+                <div class="report-id-box">
+                    <small>Report ID</small>
+                    <strong>ML-{{ range(100000, 999999) | random }}</strong>
                 </div>
             </div>
         </div>
+        <div class="header-line"></div>
+
+        <!-- Patient Information -->
+        <div class="patient-section">
+            <h3 class="section-title">PATIENT INFORMATION</h3>
+            <div class="patient-grid">
+                <div class="patient-field">
+                    <span class="field-label">Patient Name:</span>
+                    <span class="field-value">{% if current_user and current_user.is_authenticated %}{{ current_user.full_name }}{% else %}Guest Patient{% endif %}</span>
+                </div>
+                <div class="patient-field">
+                    <span class="field-label">Age/Gender:</span>
+                    <span class="field-value">{% if current_user and current_user.is_authenticated %}{{ current_user.age or 'N/A' }} / {{ current_user.gender or 'N/A' }}{% else %}N/A{% endif %}</span>
+                </div>
+                <div class="patient-field">
+                    <span class="field-label">Report Date:</span>
+                    <span class="field-value">{{ now().strftime('%d-%b-%Y %I:%M %p') }}</span>
+                </div>
+                <div class="patient-field">
+                    <span class="field-label">Test Category:</span>
+                    <span class="field-value">{{ disease_type | title }} Screening</span>
+                </div>
+                <div class="patient-field">
+                    <span class="field-label">Blood Group:</span>
+                    <span class="field-value">{% if current_user and current_user.is_authenticated %}{{ current_user.blood_group or 'N/A' }}{% else %}N/A{% endif %}</span>
+                </div>
+                <div class="patient-field">
+                    <span class="field-label">Contact:</span>
+                    <span class="field-value">{% if current_user and current_user.is_authenticated %}{{ current_user.phone or 'N/A' }}{% else %}N/A{% endif %}</span>
+                </div>
+            </div>
+        </div>
+        <div class="section-line"></div>
+
+        <!-- Test Name Banner -->
+        <div class="test-banner">
+            <h2>{{ disease_type | upper }} DISEASE PREDICTION REPORT</h2>
+        </div>
+
+
+        <!-- Test Results Table -->
+        {% if pred is not none %}
+        <div class="results-section">
+            <h3 class="section-title">TEST PARAMETERS & RESULTS</h3>
+            <table class="results-table">
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Observed Value</th>
+                        <th>Normal Range</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set ref_ranges = {
+                        'diabetes': {
+                            'pregnancies': {'unit': '', 'min': 0, 'max': 17, 'label': 'Pregnancies'},
+                            'glucose': {'unit': 'mg/dL', 'min': 70, 'max': 140, 'label': 'Glucose (Fasting)'},
+                            'bloodpressure': {'unit': 'mm Hg', 'min': 60, 'max': 90, 'label': 'Blood Pressure (Diastolic)'},
+                            'skinthickness': {'unit': 'mm', 'min': 10, 'max': 50, 'label': 'Skin Thickness (Triceps)'},
+                            'insulin': {'unit': 'µU/mL', 'min': 16, 'max': 166, 'label': 'Insulin (2-Hour Serum)'},
+                            'bmi': {'unit': 'kg/m²', 'min': 18.5, 'max': 30.0, 'label': 'Body Mass Index (BMI)'},
+                            'dpf': {'unit': '', 'min': 0.078, 'max': 2.42, 'label': 'Diabetes Pedigree Function'},
+                            'age': {'unit': 'years', 'min': 1, 'max': 120, 'label': 'Age'}
+                        },
+                        'heart': {
+                            'age': {'unit': 'years', 'min': 1, 'max': 120, 'label': 'Age'},
+                            'sex': {'unit': '', 'min': 0, 'max': 1, 'label': 'Sex (0=F, 1=M)'},
+                            'cp': {'unit': '', 'min': 0, 'max': 3, 'label': 'Chest Pain Type'},
+                            'trestbps': {'unit': 'mm Hg', 'min': 90, 'max': 140, 'label': 'Resting Blood Pressure'},
+                            'chol': {'unit': 'mg/dL', 'min': 125, 'max': 200, 'label': 'Serum Cholesterol'},
+                            'fbs': {'unit': '', 'min': 0, 'max': 0, 'label': 'Fasting Blood Sugar > 120'},
+                            'restecg': {'unit': '', 'min': 0, 'max': 0, 'label': 'Resting ECG Results'},
+                            'thalach': {'unit': 'bpm', 'min': 60, 'max': 202, 'label': 'Max Heart Rate Achieved'},
+                            'exang': {'unit': '', 'min': 0, 'max': 0, 'label': 'Exercise Induced Angina'},
+                            'oldpeak': {'unit': 'mm', 'min': 0, 'max': 2.0, 'label': 'ST Depression (Oldpeak)'},
+                            'slope': {'unit': '', 'min': 0, 'max': 2, 'label': 'Slope of Peak ST Segment'},
+                            'ca': {'unit': '', 'min': 0, 'max': 0, 'label': 'Major Vessels Colored'},
+                            'thal': {'unit': '', 'min': 1, 'max': 1, 'label': 'Thalassemia'}
+                        },
+                        'kidney': {
+                            'age': {'unit': 'years', 'min': 1, 'max': 120, 'label': 'Age'},
+                            'bp': {'unit': 'mm Hg', 'min': 60, 'max': 90, 'label': 'Blood Pressure'},
+                            'sg': {'unit': '', 'min': 1.005, 'max': 1.025, 'label': 'Specific Gravity'},
+                            'al': {'unit': '', 'min': 0, 'max': 0, 'label': 'Albumin'},
+                            'su': {'unit': '', 'min': 0, 'max': 0, 'label': 'Sugar'},
+                            'rbc': {'unit': '', 'min': 0, 'max': 0, 'label': 'Red Blood Cells'},
+                            'pc': {'unit': '', 'min': 0, 'max': 0, 'label': 'Pus Cell'},
+                            'pcc': {'unit': '', 'min': 0, 'max': 0, 'label': 'Pus Cell Clumps'},
+                            'ba': {'unit': '', 'min': 0, 'max': 0, 'label': 'Bacteria'},
+                            'bgr': {'unit': 'mg/dL', 'min': 70, 'max': 140, 'label': 'Blood Glucose Random'},
+                            'bu': {'unit': 'mg/dL', 'min': 7, 'max': 20, 'label': 'Blood Urea'},
+                            'sc': {'unit': 'mg/dL', 'min': 0.6, 'max': 1.2, 'label': 'Serum Creatinine'},
+                            'sod': {'unit': 'mEq/L', 'min': 136, 'max': 145, 'label': 'Sodium'},
+                            'pot': {'unit': 'mEq/L', 'min': 3.5, 'max': 5.0, 'label': 'Potassium'},
+                            'hemo': {'unit': 'g/dL', 'min': 12.0, 'max': 17.5, 'label': 'Hemoglobin'},
+                            'pcv': {'unit': '%', 'min': 36, 'max': 50, 'label': 'Packed Cell Volume'},
+                            'wc': {'unit': 'cells/cumm', 'min': 4500, 'max': 11000, 'label': 'White Blood Cell Count'},
+                            'rc': {'unit': 'millions/cmm', 'min': 4.5, 'max': 5.5, 'label': 'Red Blood Cell Count'},
+                            'htn': {'unit': '', 'min': 0, 'max': 0, 'label': 'Hypertension'},
+                            'dm': {'unit': '', 'min': 0, 'max': 0, 'label': 'Diabetes Mellitus'},
+                            'cad': {'unit': '', 'min': 0, 'max': 0, 'label': 'Coronary Artery Disease'},
+                            'appet': {'unit': '', 'min': 0, 'max': 0, 'label': 'Appetite (0=Good)'},
+                            'pe': {'unit': '', 'min': 0, 'max': 0, 'label': 'Pedal Edema'},
+                            'ane': {'unit': '', 'min': 0, 'max': 0, 'label': 'Anemia'}
+                        },
+                        'liver': {
+                            'age': {'unit': 'years', 'min': 1, 'max': 120, 'label': 'Age'},
+                            'gender': {'unit': '', 'min': 0, 'max': 1, 'label': 'Gender (1=Male)'},
+                            'total_bilirubin': {'unit': 'mg/dL', 'min': 0.1, 'max': 1.2, 'label': 'Total Bilirubin'},
+                            'direct_bilirubin': {'unit': 'mg/dL', 'min': 0.0, 'max': 0.3, 'label': 'Direct Bilirubin'},
+                            'alkaline_phosphotase': {'unit': 'IU/L', 'min': 44, 'max': 147, 'label': 'Alkaline Phosphatase'},
+                            'alamine_aminotransferase': {'unit': 'IU/L', 'min': 7, 'max': 56, 'label': 'ALT (SGPT)'},
+                            'aspartate_aminotransferase': {'unit': 'IU/L', 'min': 10, 'max': 40, 'label': 'AST (SGOT)'},
+                            'total_proteins': {'unit': 'g/dL', 'min': 6.0, 'max': 8.3, 'label': 'Total Proteins'},
+                            'albumin': {'unit': 'g/dL', 'min': 3.5, 'max': 5.5, 'label': 'Albumin'},
+                            'albumin_and_globulin_ratio': {'unit': '', 'min': 0.8, 'max': 2.0, 'label': 'A/G Ratio'}
+                        },
+                        'cancer': {
+                            'radius_mean': {'unit': 'mm', 'min': 6.98, 'max': 17.99, 'label': 'Radius Mean'},
+                            'texture_mean': {'unit': '', 'min': 9.71, 'max': 24.54, 'label': 'Texture Mean'},
+                            'perimeter_mean': {'unit': 'mm', 'min': 43.79, 'max': 114.6, 'label': 'Perimeter Mean'},
+                            'area_mean': {'unit': 'mm²', 'min': 143.5, 'max': 880.6, 'label': 'Area Mean'},
+                            'smoothness_mean': {'unit': '', 'min': 0.053, 'max': 0.115, 'label': 'Smoothness Mean'},
+                            'compactness_mean': {'unit': '', 'min': 0.019, 'max': 0.135, 'label': 'Compactness Mean'},
+                            'concavity_mean': {'unit': '', 'min': 0.0, 'max': 0.13, 'label': 'Concavity Mean'},
+                            'concave_points_mean': {'unit': '', 'min': 0.0, 'max': 0.074, 'label': 'Concave Points Mean'},
+                            'symmetry_mean': {'unit': '', 'min': 0.106, 'max': 0.209, 'label': 'Symmetry Mean'},
+                            'radius_se': {'unit': '', 'min': 0.112, 'max': 0.69, 'label': 'Radius SE'},
+                            'perimeter_se': {'unit': '', 'min': 0.757, 'max': 4.885, 'label': 'Perimeter SE'},
+                            'area_se': {'unit': '', 'min': 6.8, 'max': 94.0, 'label': 'Area SE'},
+                            'compactness_se': {'unit': '', 'min': 0.002, 'max': 0.052, 'label': 'Compactness SE'},
+                            'concavity_se': {'unit': '', 'min': 0.0, 'max': 0.05, 'label': 'Concavity SE'},
+                            'concave_points_se': {'unit': '', 'min': 0.0, 'max': 0.02, 'label': 'Concave Points SE'},
+                            'fractal_dimension_se': {'unit': '', 'min': 0.001, 'max': 0.006, 'label': 'Fractal Dimension SE'},
+                            'radius_worst': {'unit': 'mm', 'min': 7.93, 'max': 21.13, 'label': 'Radius Worst'},
+                            'texture_worst': {'unit': '', 'min': 12.02, 'max': 33.65, 'label': 'Texture Worst'},
+                            'perimeter_worst': {'unit': 'mm', 'min': 50.41, 'max': 138.1, 'label': 'Perimeter Worst'},
+                            'area_worst': {'unit': 'mm²', 'min': 185.2, 'max': 1326.0, 'label': 'Area Worst'},
+                            'smoothness_worst': {'unit': '', 'min': 0.071, 'max': 0.161, 'label': 'Smoothness Worst'},
+                            'compactness_worst': {'unit': '', 'min': 0.027, 'max': 0.345, 'label': 'Compactness Worst'},
+                            'concavity_worst': {'unit': '', 'min': 0.0, 'max': 0.396, 'label': 'Concavity Worst'},
+                            'concave_points_worst': {'unit': '', 'min': 0.0, 'max': 0.175, 'label': 'Concave Points Worst'},
+                            'symmetry_worst': {'unit': '', 'min': 0.157, 'max': 0.335, 'label': 'Symmetry Worst'},
+                            'fractal_dimension_worst': {'unit': '', 'min': 0.055, 'max': 0.099, 'label': 'Fractal Dimension Worst'}
+                        },
+                        'malaria': {
+                            'image': {'unit': '', 'min': 0, 'max': 0, 'label': 'Blood Smear Image'}
+                        },
+                        'pneumonia': {
+                            'image': {'unit': '', 'min': 0, 'max': 0, 'label': 'Chest X-Ray Image'}
+                        }
+                    } %}
+                    {% set ranges = ref_ranges.get(disease_type, {}) %}
+                    {% for key, value in form_data.items() %}
+                    {% set ref = ranges.get(key, {}) %}
+                    {% set val_float = value | float %}
+                    {% set is_image = (key == 'image') %}
+                    {% set is_normal = is_image or (not ref) or (val_float >= ref.get('min', 0) and val_float <= ref.get('max', 99999)) %}
+                    <tr class="{% if not is_normal %}row-abnormal{% endif %}">
+                        <td class="param-name">{{ ref.get('label', key.replace('_', ' ').title()) }}</td>
+                        <td class="param-value">{{ value }} {{ ref.get('unit', '') }}</td>
+                        <td class="param-range">
+                            {% if is_image %}
+                                Uploaded
+                            {% elif ref %}
+                                {{ ref.get('min', '') }} - {{ ref.get('max', '') }} {{ ref.get('unit', '') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td class="param-status">
+                            {% if is_image %}
+                                <span class="badge-normal">✓ Received</span>
+                            {% elif is_normal %}
+                                <span class="badge-normal">Normal</span>
+                            {% elif val_float < ref.get('min', 0) %}
+                                <span class="badge-low">↓ Low</span>
+                            {% else %}
+                                <span class="badge-high">↑ High</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="section-line"></div>
+
+
+        <!-- AI Diagnosis Result -->
+        <div class="diagnosis-section">
+            <h3 class="section-title">DIAGNOSIS & INTERPRETATION</h3>
+            <div class="diagnosis-box {% if pred == 1 %}diagnosis-positive{% else %}diagnosis-negative{% endif %}">
+                <div class="diagnosis-row">
+                    <div class="diagnosis-result">
+                        <span class="diagnosis-label">AI Prediction:</span>
+                        <span class="diagnosis-value">
+                            {% if disease_type == 'diabetes' %}
+                                {% if pred == 1 %}POSITIVE — Diabetic{% else %}NEGATIVE — Non-Diabetic{% endif %}
+                            {% elif disease_type == 'cancer' %}
+                                {% if pred == 1 %}MALIGNANT — Cancerous{% else %}BENIGN — Non-Cancerous{% endif %}
+                            {% elif disease_type == 'heart' %}
+                                {% if pred == 1 %}POSITIVE — Heart Disease Detected{% else %}NEGATIVE — No Heart Disease{% endif %}
+                            {% elif disease_type == 'kidney' %}
+                                {% if pred == 1 %}POSITIVE — Chronic Kidney Disease{% else %}NEGATIVE — No Kidney Disease{% endif %}
+                            {% elif disease_type == 'liver' %}
+                                {% if pred == 1 %}POSITIVE — Liver Disease Detected{% else %}NEGATIVE — No Liver Disease{% endif %}
+                            {% elif disease_type == 'malaria' %}
+                                {% if pred == 1 %}POSITIVE — Malaria Parasite Detected{% else %}NEGATIVE — No Infection{% endif %}
+                            {% elif disease_type == 'pneumonia' %}
+                                {% if pred == 1 %}POSITIVE — Pneumonia Detected{% else %}NEGATIVE — Normal Lungs{% endif %}
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div class="diagnosis-confidence">
+                        <span class="confidence-label">Model Confidence</span>
+                        <div class="confidence-circle {% if pred == 1 %}conf-danger{% else %}conf-safe{% endif %}">
+                            <span class="conf-value">{{ confidence }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Level -->
+            <div class="risk-section">
+                <span class="risk-label">Risk Assessment:</span>
+                {% if pred == 1 and confidence >= 85 %}
+                    <span class="risk-badge risk-high">HIGH RISK</span>
+                    <p class="risk-note">Immediate medical consultation recommended. Please consult a specialist.</p>
+                {% elif pred == 1 and confidence >= 60 %}
+                    <span class="risk-badge risk-moderate">MODERATE RISK</span>
+                    <p class="risk-note">Further diagnostic tests recommended. Please consult your physician.</p>
+                {% elif pred == 1 %}
+                    <span class="risk-badge risk-low">LOW-MODERATE RISK</span>
+                    <p class="risk-note">Borderline result. Follow-up testing advised.</p>
+                {% else %}
+                    <span class="risk-badge risk-safe">LOW RISK</span>
+                    <p class="risk-note">Results appear normal. Continue regular health checkups.</p>
+                {% endif %}
+            </div>
+        </div>
+        <div class="section-line"></div>
+
+        <!-- Model Explainability -->
+        {% if explanations is defined and explanations %}
+        <div class="explainability-section">
+            <h3 class="section-title">MODEL EXPLAINABILITY — Key Contributing Factors</h3>
+            <p style="font-size: 12px; color: #555; margin-bottom: 12px;">These parameters had the highest influence on the prediction:</p>
+            {% for exp in explanations %}
+            <div style="margin-bottom: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
+                    <span><strong>{{ exp.feature }}</strong> (Value: {{ exp.value }})</span>
+                    <span>{{ exp.contribution }}%</span>
+                </div>
+                <div style="width: 100%; height: 8px; background: #eee; border-radius: 4px; overflow: hidden;">
+                    <div style="width: {{ exp.contribution }}%; height: 100%; background: linear-gradient(90deg, #1a237e, #3498db); border-radius: 4px;"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="section-line"></div>
+        {% endif %}
+
+        <!-- Disclaimer & Footer -->
+        <div class="report-disclaimer">
+            <p><strong>Disclaimer:</strong> This report is generated by an AI-based predictive model for screening purposes only. 
+            It does not constitute a medical diagnosis. Please consult a qualified healthcare professional for clinical interpretation 
+            and treatment decisions.</p>
+        </div>
+
+        <!-- Doctor Recommendation & Appointment -->
+        {% if pred is defined and pred is not none %}
+        <div class="doctor-recommendation" style="margin: 20px 0; padding: 16px; background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius: 10px; border-left: 4px solid #2e7d32;">
+            <h3 style="margin: 0 0 10px; color: #1b5e20; font-size: 15px;">
+                <i class="fas fa-user-md"></i> Recommended: Consult a Specialist
+            </h3>
+            <p style="font-size: 13px; color: #333; margin-bottom: 12px;">
+                Based on your <strong>{{ disease_type | title }}</strong> screening result, we recommend consulting a specialist for further evaluation.
+            </p>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <a href="/appointments" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #1a237e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                    <i class="fas fa-calendar-check"></i> Book Appointment
+                </a>
+                <a href="/HealthCareAssistant" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #0277bd; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                    <i class="fas fa-comments"></i> Ask AI Assistant
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="report-footer">
+            <div class="footer-left">
+                <p class="footer-generated">Report generated on: {{ now().strftime('%d/%m/%Y at %H:%M') }}</p>
+                <p class="footer-method">Method: Machine Learning ({{ disease_type | title }} Classifier)</p>
+            </div>
+            <div class="footer-right">
+                <div class="signature-box">
+                    <div class="signature-line"></div>
+                    <p>Authorized Signatory</p>
+                    <p class="doctor-name">Medilife AI Diagnostics</p>
+                </div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Error state -->
+        <div class="diagnosis-section">
+            <div class="diagnosis-box diagnosis-error">
+                <p class="text-center">⚠️ Unable to generate prediction. Please check your inputs and try again.</p>
+                {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                <p class="text-center text-danger">{{ messages[0] }}</p>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div><!-- end report-container -->
+
+    <!-- Print Button -->
+    <div class="report-actions no-print">
+        <button onclick="window.print()" class="btn-print">🖨️ Print Report</button>
+        <a href="{{ url_for('home') }}" class="btn-back">← Back to Home</a>
     </div>
+
+    <!-- Log prediction -->
+    {% if pred is not none %}
+    <script>
+        try {
+            fetch('/api/log/prediction', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    disease_name: '{{ disease_type }}',
+                    prediction_result: '{{ pred }}',
+                    confidence_score: '{{ confidence }}',
+                    risk_level: '{% if pred == 1 and confidence >= 85 %}high{% elif pred == 1 and confidence >= 60 %}moderate{% elif pred == 1 %}low-moderate{% else %}low{% endif %}',
+                    form_data: {{ form_data | tojson }}
+                })
+            }).catch(() => {});
+        } catch (e) {}
+    </script>
+    {% endif %}
 </div>
 
+
 <style>
-.confidence-display {
+/* Hospital Report Styles */
+.report-page {
+    background: #f0f2f5;
+    padding: 30px 0;
+    min-height: 100vh;
+}
+.report-container {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: #fff;
+    padding: 40px 50px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 13px;
+    color: #1a1a1a;
+}
+
+/* Header */
+.report-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.hospital-logo .logo-img {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+}
+.hospital-info {
+    text-align: center;
+    flex: 1;
+    padding: 0 20px;
+}
+.hospital-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a237e;
+    margin: 0;
+    letter-spacing: 1px;
+}
+.hospital-tagline {
+    font-size: 12px;
+    color: #4a4a4a;
+    margin: 3px 0;
+}
+.hospital-address, .hospital-contact {
+    font-size: 11px;
+    color: #666;
+    margin: 2px 0;
+}
+.report-id-box {
+    border: 2px solid #1a237e;
+    padding: 8px 12px;
+    text-align: center;
+    border-radius: 4px;
+}
+.report-id-box small {
+    display: block;
+    font-size: 10px;
+    color: #666;
+}
+.report-id-box strong {
+    font-size: 13px;
+    color: #1a237e;
+}
+.header-line {
+    height: 3px;
+    background: linear-gradient(to right, #1a237e, #0d47a1, #1565c0);
+    margin-bottom: 20px;
+}
+.section-line {
+    height: 1px;
+    background: #ddd;
+    margin: 15px 0;
+}
+
+/* Patient Section */
+.section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a237e;
+    border-bottom: 2px solid #1a237e;
+    padding-bottom: 5px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+.patient-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 30px;
+}
+.patient-field {
+    display: flex;
+    gap: 8px;
+}
+.field-label {
+    font-weight: 600;
+    color: #444;
+    min-width: 110px;
+}
+.field-value {
+    color: #1a1a1a;
+}
+
+/* Test Banner */
+.test-banner {
+    background: #1a237e;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 4px;
+}
+.test-banner h2 {
+    margin: 0;
+    font-size: 15px;
+    letter-spacing: 1px;
+}
+
+/* Results Table */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 10px;
 }
-.progress {
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    overflow: hidden;
+.results-table th {
+    background: #e8eaf6;
+    color: #1a237e;
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid #c5cae9;
 }
-.progress-bar {
+.results-table td {
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    font-size: 12px;
+}
+.results-table tr:nth-child(even) {
+    background: #fafafa;
+}
+.row-abnormal {
+    background: #fff3e0 !important;
+}
+.row-abnormal td {
+    border-color: #ffcc80;
+}
+.param-name { font-weight: 500; }
+.param-value { font-weight: 600; color: #1a1a1a; }
+.param-range { color: #666; font-size: 11px; }
+.badge-normal {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-high {
+    background: #ffebee;
+    color: #c62828;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+.badge-low {
+    background: #fff3e0;
+    color: #e65100;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+/* Diagnosis Section */
+.diagnosis-box {
+    border-radius: 8px;
+    padding: 20px;
+    margin: 10px 0;
+}
+.diagnosis-positive {
+    background: linear-gradient(135deg, #ffebee, #fce4ec);
+    border: 2px solid #ef5350;
+}
+.diagnosis-negative {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border: 2px solid #66bb6a;
+}
+.diagnosis-error {
+    background: #fff3e0;
+    border: 2px solid #ff9800;
+}
+.diagnosis-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.diagnosis-label {
+    font-size: 13px;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+.diagnosis-value {
+    font-size: 18px;
+    font-weight: 700;
+}
+.diagnosis-positive .diagnosis-value { color: #c62828; }
+.diagnosis-negative .diagnosis-value { color: #2e7d32; }
+
+.confidence-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: bold;
-    font-size: 14px;
-    transition: width 0.6s ease;
+    border: 4px solid;
+}
+.conf-danger { border-color: #ef5350; background: #ffebee; }
+.conf-safe { border-color: #66bb6a; background: #e8f5e9; }
+.conf-value { font-size: 16px; font-weight: 700; }
+.confidence-label {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+/* Risk Section */
+.risk-section {
+    margin-top: 15px;
+    padding: 10px 0;
+}
+.risk-label { font-weight: 600; color: #444; }
+.risk-badge {
+    padding: 4px 14px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-left: 10px;
+}
+.risk-high { background: #c62828; color: #fff; }
+.risk-moderate { background: #f57c00; color: #fff; }
+.risk-low { background: #fdd835; color: #333; }
+.risk-safe { background: #2e7d32; color: #fff; }
+.risk-note {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #555;
+    font-style: italic;
+}
+
+/* Disclaimer & Footer */
+.report-disclaimer {
+    background: #f5f5f5;
+    padding: 12px 15px;
+    border-left: 4px solid #ff9800;
+    margin: 15px 0;
+    font-size: 11px;
+    color: #555;
+}
+.report-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 30px;
+    padding-top: 15px;
+}
+.footer-generated, .footer-method {
+    font-size: 11px;
+    color: #666;
+    margin: 2px 0;
+}
+.signature-box {
+    text-align: center;
+}
+.signature-line {
+    width: 150px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 5px;
+}
+.signature-box p {
+    font-size: 11px;
+    margin: 2px 0;
+    color: #444;
+}
+.doctor-name {
+    font-weight: 600;
+    color: #1a237e;
+}
+
+/* Action Buttons */
+.report-actions {
+    text-align: center;
+    margin: 25px auto;
+    max-width: 210mm;
+}
+.btn-print {
+    background: #1a237e;
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    font-size: 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 0 10px;
+}
+.btn-print:hover { background: #0d47a1; }
+.btn-back {
+    background: #fff;
+    color: #1a237e;
+    border: 2px solid #1a237e;
+    padding: 10px 30px;
+    font-size: 15px;
+    border-radius: 6px;
+    text-decoration: none;
+    margin: 0 10px;
+}
+.btn-back:hover { background: #e8eaf6; }
+
+/* Print Styles */
+@media print {
+    .no-print { display: none !important; }
+    body, html { margin: 0; padding: 0; }
+    .report-page { padding: 0; background: #fff; }
+    .report-container {
+        box-shadow: none;
+        padding: 20px 30px;
+        max-width: 100%;
+    }
+    @page {
+        size: A4;
+        margin: 10mm;
+    }
+    .diagnosis-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .results-table th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .test-banner { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .badge-normal, .badge-high, .badge-low { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .risk-badge { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
 </style>
 {% endblock %}

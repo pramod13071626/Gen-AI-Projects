@@ -1,0 +1,178 @@
+{% extends "admin/base_admin.html" %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+<!-- KPI Cards Row 1 -->
+<div class="row g-3 mb-3">
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Users</div><div class="kpi-value">{{ total_users }}</div></div>
+        <div class="kpi-icon" style="background:#dbeafe;"><i class="fas fa-users" style="color:#2563eb;"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Predictions</div><div class="kpi-value">{{ total_predictions }}</div></div>
+        <div class="kpi-icon" style="background:#dcfce7;"><i class="fas fa-chart-line" style="color:#16a34a;"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Doctors</div><div class="kpi-value">{{ total_doctors }}</div></div>
+        <div class="kpi-icon" style="background:#fef3c7;"><i class="fas fa-user-md" style="color:#d97706;"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Appointments</div><div class="kpi-value">{{ total_appointments }}</div></div>
+        <div class="kpi-icon" style="background:#e0e7ff;"><i class="fas fa-calendar-check" style="color:#4f46e5;"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI Cards Row 2 -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Positive Cases</div><div class="kpi-value" style="color:#dc2626;">{{ positive_count }}</div></div>
+        <div class="kpi-icon" style="background:#fee2e2;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Chat Sessions</div><div class="kpi-value">{{ total_chats }}</div></div>
+        <div class="kpi-icon" style="background:#fef3c7;"><i class="fas fa-comments" style="color:#d97706;"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Complaints</div><div class="kpi-value">{{ total_complaints }}</div></div>
+        <div class="kpi-icon" style="background:#fee2e2;"><i class="fas fa-ticket-alt" style="color:#dc2626;"></i></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="kpi-card">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><div class="kpi-label">Detection Rate</div><div class="kpi-value">{% if total_predictions > 0 %}{{ "%.0f" | format(positive_count * 100 / total_predictions) }}%{% else %}0%{% endif %}</div></div>
+        <div class="kpi-icon" style="background:#dcfce7;"><i class="fas fa-percentage" style="color:#16a34a;"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Disease Chart (small) -->
+  <div class="col-lg-4">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-chart-pie me-2"></i>Disease Distribution</h6></div>
+      <div class="card-body" style="padding: 15px;"><canvas id="diseaseChart" height="180"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Bar Chart (small) -->
+  <div class="col-lg-4">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-chart-bar me-2"></i>Positive vs Negative</h6></div>
+      <div class="card-body" style="padding: 15px;"><canvas id="barChart" height="180"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Model Retraining -->
+  <div class="col-lg-4">
+    <div class="data-card">
+      <div class="card-header"><h6><i class="fas fa-brain me-2"></i>Model Retraining</h6></div>
+      <div class="card-body" style="padding: 20px;">
+        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Retrain ML models using prediction data collected from users.</p>
+        <form method="POST" action="{{ url_for('admin.trigger_retrain') }}">
+          <button type="submit" class="btn btn-primary w-100" id="retrainBtn">
+            <i class="fas fa-sync-alt me-1"></i> Retrain All Models
+          </button>
+        </form>
+        <div id="retrainStatus" style="margin-top:12px; font-size:0.8rem;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Recent Users -->
+<div class="row g-4 mt-1">
+  <div class="col-lg-6">
+    <div class="data-card">
+      <div class="card-header">
+        <h6><i class="fas fa-user-clock me-2"></i>Recent Users</h6>
+        <a href="{{ url_for('admin.users') }}" style="font-size:0.75rem; color:#3b82f6; text-decoration:none;">View All →</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="admin-table">
+          <thead><tr><th>Name</th><th>Joined</th></tr></thead>
+          <tbody>
+            {% for user in recent_users %}
+            <tr><td><strong>{{ user.full_name }}</strong><br><small class="text-muted">{{ user.email }}</small></td><td><small>{{ user.created_at.strftime('%d %b') }}</small></td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const stats = {{ disease_stats | tojson }};
+const posNeg = {{ disease_pos_neg | tojson }};
+const labels = Object.keys(stats).map(s => s.charAt(0).toUpperCase() + s.slice(1));
+const values = Object.values(stats);
+const colors = ['#3b82f6','#ef4444','#f59e0b','#10b981','#8b5cf6','#ec4899','#06b6d4'];
+
+new Chart(document.getElementById('diseaseChart'), {
+  type: 'doughnut',
+  data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] },
+  options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 10 } } } } }
+});
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels,
+    datasets: [
+      { label: 'Positive', data: labels.map(l => (posNeg[l.toLowerCase()] || {}).positive || 0), backgroundColor: '#ef4444', borderRadius: 4 },
+      { label: 'Negative', data: labels.map(l => (posNeg[l.toLowerCase()] || {}).negative || 0), backgroundColor: '#10b981', borderRadius: 4 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 10 } } } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9 } } }, y: { beginAtZero: true, stacked: true, grid: { color: '#f1f5f9' } }, x: { stacked: true, grid: { display: false }, ticks: { font: { size: 9 } } } } }
+});
+
+// Poll retrain status
+function checkRetrain() {
+  fetch('/admin/retrain/status').then(r => r.json()).then(d => {
+    const el = document.getElementById('retrainStatus');
+    if (d.running) {
+      el.innerHTML = '<span style="color:#f59e0b;"><i class="fas fa-spinner fa-spin"></i> Retraining in progress...</span>';
+      setTimeout(checkRetrain, 3000);
+    } else if (d.last_run) {
+      let html = '<span style="color:#16a34a;">Last run: ' + d.last_run + '</span><br>';
+      for (const [name, res] of Object.entries(d.results || {})) {
+        const icon = res.status === 'success' ? '✅' : res.status === 'skipped' ? '⏭️' : '❌';
+        html += icon + ' ' + name + ': ' + (res.accuracy ? res.accuracy + '% (' + res.samples + ' samples)' : res.reason) + '<br>';
+      }
+      el.innerHTML = html;
+    }
+  }).catch(() => {});
+}
+checkRetrain();
+</script>
+{% endblock %}

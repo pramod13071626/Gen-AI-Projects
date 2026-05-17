@@ -1,5 +1,18 @@
 {% extends "main.html" %}
 {% block content %}
+<!-- Navigation -->
+<div class="bg-light py-3 mb-4">
+    <div class="container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{{ url_for('home') }}" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('home') }}#predictors" class="text-decoration-none">Disease Predictors</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Diabetes Prediction</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
 <div class="container">
     <div class="row">
         <div class="col-lg-8 mx-auto text-center" data-aos="fade-up">
@@ -12,7 +25,8 @@
         <div class="col-lg-8">
             <div class="card disease-card" data-aos="fade-up" data-aos-delay="100">
                 <div class="card-body p-4">
-                    <form action="{{ url_for('predictPage') }}" method="POST" id="diabetesForm">
+                    <form action="{{ url_for('predict_disease') }}" method="POST" id="diabetesForm">
+                        <input type="hidden" name="disease_type" value="diabetes">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-group">
