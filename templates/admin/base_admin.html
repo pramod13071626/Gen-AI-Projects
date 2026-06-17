@@ -1,137 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Medilife Admin</title>
+  <title>{% block title %}Medilife Admin{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='img/core-img/favicon.ico') }}" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f1f5f9; min-height: 100vh; }
-
-    /* Sidebar */
-    .sidebar {
-      position: fixed; top: 0; left: 0; width: 250px; height: 100vh;
-      background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-      padding: 0; z-index: 1000; overflow-y: auto;
-      transition: width 0.3s;
-    }
-    .sidebar-brand {
-      padding: 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1);
-      display: flex; align-items: center; gap: 10px;
-    }
-    .sidebar-brand i { color: #3b82f6; font-size: 1.5rem; }
-    .sidebar-brand span { color: #fff; font-weight: 700; font-size: 1.2rem; }
-    .sidebar-brand small { color: #94a3b8; font-size: 0.7rem; display: block; }
-
-    .sidebar-nav { padding: 15px 0; }
-    .sidebar-nav .nav-section {
-      padding: 8px 20px; font-size: 0.65rem; text-transform: uppercase;
-      letter-spacing: 1.5px; color: #64748b; font-weight: 600; margin-top: 10px;
-    }
-    .sidebar-nav a {
-      display: flex; align-items: center; gap: 12px;
-      padding: 11px 20px; color: #cbd5e1; text-decoration: none;
-      font-size: 0.85rem; font-weight: 500; transition: all 0.2s;
-      border-left: 3px solid transparent;
-    }
-    .sidebar-nav a:hover { background: rgba(59,130,246,0.1); color: #fff; border-left-color: #3b82f6; }
-    .sidebar-nav a.active { background: rgba(59,130,246,0.15); color: #3b82f6; border-left-color: #3b82f6; }
-    .sidebar-nav a i { width: 18px; text-align: center; font-size: 0.9rem; }
-
-    /* Main Content */
-    .main-content { margin-left: 250px; min-height: 100vh; }
-
-    /* Top Bar */
-    .topbar {
-      background: #fff; padding: 15px 30px; border-bottom: 1px solid #e2e8f0;
-      display: flex; justify-content: space-between; align-items: center;
-      position: sticky; top: 0; z-index: 100;
-    }
-    .topbar h4 { margin: 0; font-weight: 700; color: #1e293b; font-size: 1.1rem; }
-    .topbar .admin-info { display: flex; align-items: center; gap: 12px; }
-    .topbar .admin-avatar {
-      width: 36px; height: 36px; border-radius: 50%; background: #3b82f6;
-      display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 600; font-size: 0.8rem;
-    }
-
-    /* Page Content */
-    .page-content { padding: 25px 30px; }
-
-    /* KPI Cards */
-    .kpi-card {
-      background: #fff; border-radius: 12px; padding: 20px;
-      border: 1px solid #e2e8f0; transition: box-shadow 0.2s;
-    }
-    .kpi-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-    .kpi-card .kpi-icon {
-      width: 42px; height: 42px; border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
-    }
-    .kpi-card .kpi-value { font-size: 1.6rem; font-weight: 700; color: #1e293b; }
-    .kpi-card .kpi-label { font-size: 0.78rem; color: #64748b; font-weight: 500; }
-
-    /* Data Cards */
-    .data-card {
-      background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden;
-    }
-    .data-card .card-header {
-      padding: 16px 20px; border-bottom: 1px solid #e2e8f0;
-      display: flex; justify-content: space-between; align-items: center;
-      background: #fff;
-    }
-    .data-card .card-header h6 { margin: 0; font-weight: 600; color: #1e293b; font-size: 0.9rem; }
-    .data-card .card-body { padding: 20px; }
-
-    /* Tables */
-    .admin-table { width: 100%; border-collapse: collapse; }
-    .admin-table th {
-      padding: 10px 14px; font-size: 0.72rem; text-transform: uppercase;
-      letter-spacing: 0.5px; color: #64748b; font-weight: 600;
-      border-bottom: 1px solid #e2e8f0; background: #f8fafc;
-    }
-    .admin-table td { padding: 12px 14px; font-size: 0.85rem; color: #334155; border-bottom: 1px solid #f1f5f9; }
-    .admin-table tr:hover td { background: #f8fafc; }
-
-    /* Badges */
-    .badge-success { background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
-    .badge-danger { background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
-    .badge-warning { background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
-    .badge-info { background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; }
-
-    /* Buttons */
-    .btn-admin { padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; }
-    .btn-primary-admin { background: #3b82f6; color: #fff; }
-    .btn-primary-admin:hover { background: #2563eb; color: #fff; }
-    .btn-danger-admin { background: #fee2e2; color: #dc2626; }
-    .btn-danger-admin:hover { background: #dc2626; color: #fff; }
-    .btn-edit { background: #dbeafe; color: #1d4ed8; }
-    .btn-edit:hover { background: #1d4ed8; color: #fff; }
-
-    /* Modal */
-    .modal-content { border-radius: 12px; border: none; }
-    .modal-header { border-bottom: 1px solid #e2e8f0; padding: 16px 20px; }
-    .modal-body { padding: 20px; }
-    .modal-footer { border-top: 1px solid #e2e8f0; padding: 12px 20px; }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .sidebar { width: 60px; }
-      .sidebar-brand span, .sidebar-brand small, .sidebar-nav .nav-section, .sidebar-nav a span { display: none; }
-      .sidebar-nav a { justify-content: center; padding: 14px; }
-      .main-content { margin-left: 60px; }
-      .page-content { padding: 15px; }
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-  <!-- Sidebar -->
+<body class="admin-body">
   <aside class="sidebar">
     <div class="sidebar-brand">
-      <i class="fas fa-heartbeat"></i>
-      <div><span>Medilife</span><small>Admin Panel</small></div>
+      <span class="brand-mark"><i class="fas fa-heartbeat"></i></span>
+      <div><span>Medilife</span><small>Diagnostics admin</small></div>
     </div>
     <nav class="sidebar-nav">
       <div class="nav-section">Main</div>
@@ -146,6 +30,12 @@
       <a href="{{ url_for('admin.doctors') }}" class="{% if 'doctors' in request.endpoint %}active{% endif %}">
         <i class="fas fa-user-md"></i><span>Doctors</span>
       </a>
+      <a href="{{ url_for('admin.admin_appointments') }}" class="{% if 'appointments' in request.endpoint %}active{% endif %}">
+        <i class="fas fa-calendar-alt"></i><span>Appointments</span>
+      </a>
+      <a href="{{ url_for('admin.complaints') }}" class="{% if 'complaints' in request.endpoint %}active{% endif %}">
+        <i class="fas fa-ticket-alt"></i><span>Complaints</span>
+      </a>
 
       <div class="nav-section">Analytics</div>
       <a href="{{ url_for('admin.predictions') }}" class="{% if 'predictions' in request.endpoint %}active{% endif %}">
@@ -154,36 +44,39 @@
       <a href="{{ url_for('admin.health_overview') }}" class="{% if 'health' in request.endpoint %}active{% endif %}">
         <i class="fas fa-heartbeat"></i><span>Health Overview</span>
       </a>
-      <a href="{{ url_for('admin.admin_appointments') }}" class="{% if 'appointments' in request.endpoint %}active{% endif %}">
-        <i class="fas fa-calendar-alt"></i><span>Appointments</span>
-      </a>
       <a href="{{ url_for('admin.chatlogs') }}" class="{% if 'chatlogs' in request.endpoint %}active{% endif %}">
         <i class="fas fa-comments"></i><span>Chat Logs</span>
       </a>
-      <a href="{{ url_for('admin.complaints') }}" class="{% if 'complaints' in request.endpoint %}active{% endif %}">
-        <i class="fas fa-ticket-alt"></i><span>Complaints</span>
-      </a>
 
       <div class="nav-section">Account</div>
+      <a href="{{ url_for('home') }}">
+        <i class="fas fa-house-medical"></i><span>Site Home</span>
+      </a>
       <a href="{{ url_for('auth.logout') }}">
         <i class="fas fa-sign-out-alt"></i><span>Logout</span>
       </a>
     </nav>
   </aside>
 
-  <!-- Main Content -->
   <div class="main-content">
     <div class="topbar">
-      <h4>{% block page_title %}Dashboard{% endblock %}</h4>
+      <div class="admin-page-heading">
+        <div class="section-eyebrow mb-2"><span class="pulse-dot"></span> Admin Console</div>
+        <h4>{% block page_title %}Dashboard{% endblock %}</h4>
+        <p>{% block page_subtitle %}Monitor operations, patient activity, and diagnostic workflows.{% endblock %}</p>
+      </div>
       <div class="admin-info">
-        <small class="text-muted">{{ current_user.full_name }}</small>
+        <div class="text-end d-none d-sm-block">
+          <small class="text-muted d-block">Signed in as</small>
+          <strong>{{ current_user.full_name }}</strong>
+        </div>
         <div class="admin-avatar">{{ current_user.full_name[0] | upper }}</div>
       </div>
     </div>
     <div class="page-content">
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}{% for cat, msg in messages %}
-          <div class="alert alert-{{ 'success' if cat == 'success' else 'danger' }} alert-dismissible fade show" style="border-radius: 8px; font-size: 0.85rem;">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+          <div class="alert alert-{{ 'success' if cat == 'success' else 'danger' }} alert-dismissible fade show">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
         {% endfor %}{% endif %}
       {% endwith %}
       {% block content %}{% endblock %}
@@ -191,6 +84,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/ui.js') }}"></script>
   {% block scripts %}{% endblock %}
 </body>
 </html>

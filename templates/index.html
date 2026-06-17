@@ -1,126 +1,144 @@
 {% extends "main.html" %}
+{% block title %}Medilife - AI-Powered Healthcare SaaS{% endblock %}
+{% block body_class %}home-page{% endblock %}
 {% block content %}
-<style>
-    .hero-section {
-        background: linear-gradient(135deg, #1a237e, #3498db);
-        color: white;
-        padding: 100px 20px;
-        text-align: center;
-        position: relative;
-        z-index: 1;
-    }
-    .hero-section h1 { font-size: 3rem; margin-bottom: 20px; }
-    .hero-section p { font-size: 1.3rem; margin-bottom: 30px; opacity: 0.9; }
-    .hero-btns {
-        position: relative;
-        z-index: 10;
-    }
-    .hero-btns a {
-        display: inline-block;
-        padding: 12px 30px;
-        margin: 0 10px;
-        border-radius: 25px;
-        text-decoration: none !important;
-        font-weight: bold;
-        transition: transform 0.2s;
-        cursor: pointer;
-    }
-    .hero-btns a:hover { transform: scale(1.05); }
-    .btn-login { background: white; color: #1a237e !important; }
-    .btn-register { background: #e91e63; color: white !important; }
-    .features-section { padding: 60px 20px; background: #f5f5f5; text-align: center; }
-    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; max-width: 900px; margin: 30px auto 0; }
-    .feature-card { background: white; padding: 30px 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .feature-card h3 { color: #1a237e; margin-top: 10px; }
-    .diseases-section { padding: 60px 20px; text-align: center; }
-    .diseases-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; max-width: 1100px; margin: 30px auto 0; }
-    .disease-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-top: 4px solid #3498db; }
-    .disease-card h4 { color: #1a237e; margin: 10px 0 5px; }
-    .disease-card p { color: #666; font-size: 0.9rem; }
-    .about-section { padding: 60px 20px; background: #f5f5f5; text-align: center; }
-    .about-section img { max-width: 300px; margin: 20px; }
-    .section-title { font-size: 2rem; color: #1a237e; margin-bottom: 10px; }
-</style>
-
-<!-- Hero Section -->
-<section class="hero-section">
-    <img src="{{ url_for('static', filename='logo1.png') }}" alt="Logo" style="max-width:120px; margin-bottom:20px;">
-    <h1>{{ t.hero_title }}</h1>
-    <p>{{ t.hero_subtitle }}</p>
-    <div class="hero-btns">
-        <a href="{{ url_for('auth.login') }}" class="btn-login">{{ t.login }}</a>
-        <a href="{{ url_for('auth.register') }}" class="btn-register">{{ t.register }}</a>
+<section class="hero-premium">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7" data-aos="fade-up">
+        <div class="premium-badge mb-4"><span class="pulse-dot"></span> AI healthcare screening platform</div>
+        <h1>{{ t.hero_title }}</h1>
+        <p class="mt-4">{{ t.hero_subtitle }} Built for fast screenings, explainable reports, doctor workflows, and accountable admin analytics.</p>
+        <div class="hero-actions">
+          <a href="{{ url_for('auth.register') }}" class="btn btn-lg btn-custom px-4"><i class="fas fa-user-plus me-2"></i>Start Free Screening</a>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-lg btn-outline-premium px-4"><i class="fas fa-right-to-bracket me-2"></i>Login</a>
+          <a href="{{ url_for('healthcare_assistant') }}" class="btn btn-lg btn-outline-light px-4 rounded-pill"><i class="fas fa-robot me-2"></i>Try AI Assistant</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-float-grid" data-aos="fade-left">
+          <div class="floating-card">
+            <small>Model Coverage</small>
+            <strong class="d-block fs-4 mt-1">7 disease predictors</strong>
+            <span class="small">ML and deep learning screening pipelines</span>
+          </div>
+          <div class="floating-card">
+            <small>AI Assistant</small>
+            <strong class="d-block fs-4 mt-1">Ollama connected</strong>
+            <span class="small">Healthcare-only conversational guidance</span>
+          </div>
+          <div class="floating-card">
+            <small>Care Operations</small>
+            <strong class="d-block fs-4 mt-1">Reports + doctors</strong>
+            <span class="small">PDF-ready outputs and appointments</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </section>
 
-<!-- Features Section -->
-<section class="features-section">
-    <h2 class="section-title">{{ t.why_choose }}</h2>
-    <div class="features-grid">
-        <div class="feature-card">
-            <h3>🧬 7 Disease Models</h3>
-            <p>Comprehensive coverage of major health conditions</p>
-        </div>
-        <div class="feature-card">
-            <h3>🎯 98% Accuracy</h3>
-            <p>High-precision predictions powered by ML</p>
-        </div>
-        <div class="feature-card">
-            <h3>📊 Instant Reports</h3>
-            <p>Get diagnosis results in seconds</p>
-        </div>
-        <div class="feature-card">
-            <h3>🤖 AI Assistant</h3>
-            <p>Intelligent guidance throughout the process</p>
-        </div>
+<section class="premium-section pt-4">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value" data-count-to="7">7</div><div class="metric-label">Disease Models</div></div></div>
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value" data-count-to="98" data-count-suffix="%">98%</div><div class="metric-label">Peak Accuracy</div></div></div>
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value" data-count-to="24" data-count-suffix="/7">24/7</div><div class="metric-label">AI Assistant</div></div></div>
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value" data-count-to="1">1</div><div class="metric-label">Unified Health Hub</div></div></div>
     </div>
+  </div>
 </section>
 
-<!-- Disease Cards Section -->
-<section class="diseases-section">
-    <h2 class="section-title">{{ t.diseases_detect }}</h2>
-    <div class="diseases-grid">
-        <div class="disease-card">
-            <h4>🩸 Diabetes</h4>
-            <p>Early detection of diabetes using key health indicators</p>
-        </div>
-        <div class="disease-card">
-            <h4>🎗️ Breast Cancer</h4>
-            <p>Predict malignant or benign tumors from cell data</p>
-        </div>
-        <div class="disease-card">
-            <h4>❤️ Heart Disease</h4>
-            <p>Assess cardiovascular risk from clinical parameters</p>
-        </div>
-        <div class="disease-card">
-            <h4>🫘 Kidney Disease</h4>
-            <p>Detect chronic kidney disease from blood reports</p>
-        </div>
-        <div class="disease-card">
-            <h4>🫁 Liver Disease</h4>
-            <p>Identify liver conditions from patient records</p>
-        </div>
-        <div class="disease-card">
-            <h4>🦟 Malaria</h4>
-            <p>CNN-based detection from cell images</p>
-        </div>
-        <div class="disease-card">
-            <h4>🫁 Pneumonia</h4>
-            <p>Deep learning analysis of chest X-ray images</p>
-        </div>
+<section class="premium-section" id="predictors">
+  <div class="container">
+    <div class="section-heading-premium">
+      <span class="section-eyebrow">Clinical screening coverage</span>
+      <h2 class="mt-3">{{ t.diseases_detect }}</h2>
+      <p>Structured forms and image uploads guide users through the right inputs, then convert predictions into readable risk summaries.</p>
     </div>
+    <div class="row g-4">
+      {% set diseases = [
+        ('Diabetes','diabetesPage','fa-droplet','Glucose, BMI, insulin and pedigree analysis.'),
+        ('Breast Cancer','cancerPage','fa-ribbon','Tumor feature classification for benign or malignant risk.'),
+        ('Heart Disease','heartPage','fa-heart-pulse','Cardio risk from BP, ECG, cholesterol and exercise indicators.'),
+        ('Kidney Disease','kidneyPage','fa-vial','Blood, urine and renal function parameter screening.'),
+        ('Liver Disease','liverPage','fa-flask','Bilirubin, enzyme and protein based liver assessment.'),
+        ('Malaria','malariaPage','fa-microscope','Cell image analysis using deep learning.'),
+        ('Pneumonia','pneumoniaPage','fa-lungs','Chest X-ray screening for pneumonia signals.')
+      ] %}
+      {% for name, endpoint, icon, desc in diseases %}
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for(endpoint) }}" class="text-decoration-none">
+          <div class="coverage-card">
+            <span class="icon-chip mb-3"><i class="fas {{ icon }}"></i></span>
+            <h4>{{ name }}</h4>
+            <p class="mb-3">{{ desc }}</p>
+            <span class="badge-info">AI Screening</span>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </section>
 
-<!-- About Section -->
-<section class="about-section">
-    <h2 class="section-title">{{ t.about_platform }}</h2>
-    <p style="max-width:700px; margin:0 auto 20px; color:#555; font-size:1.1rem;">
-        Our AI-powered medical diagnosis platform leverages Machine Learning and Deep Learning to provide
-        accurate, instant health predictions. Upload your medical data and receive reliable results backed
-        by models trained on thousands of clinical records.
-    </p>
-    <img src="{{ url_for('static', filename='Healthcare_doc.png') }}" alt="Healthcare">
-    <br><br>
-    <a href="{{ url_for('contact') }}" style="color:#1a237e; font-weight:bold; font-size:1.1rem;">Contact Us →</a>
+<section class="premium-section" style="background:rgba(255,255,255,0.62);">
+  <div class="container">
+    <div class="section-heading-premium">
+      <span class="section-eyebrow">How it works</span>
+      <h2 class="mt-3">From health inputs to actionable next steps</h2>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-3"><div class="workflow-card"><span class="icon-chip mb-3">1</span><h5>Choose a model</h5><p>Select the screening workflow that matches the health concern.</p></div></div>
+      <div class="col-md-3"><div class="workflow-card"><span class="icon-chip mb-3">2</span><h5>Enter guided values</h5><p>Sample placeholders show the format expected for every input.</p></div></div>
+      <div class="col-md-3"><div class="workflow-card"><span class="icon-chip mb-3">3</span><h5>Review risk</h5><p>Confidence, risk labels, and contributing factors make results understandable.</p></div></div>
+      <div class="col-md-3"><div class="workflow-card"><span class="icon-chip mb-3">4</span><h5>Take action</h5><p>Download reports, ask the AI assistant, or book a doctor appointment.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="premium-section">
+  <div class="container">
+    <div class="row g-4 align-items-stretch">
+      <div class="col-lg-4">
+        <div class="premium-card h-100 p-4">
+          <span class="icon-chip mb-3"><i class="fas fa-robot"></i></span>
+          <h3>AI healthcare assistant</h3>
+          <p>Ollama-powered conversational help for symptoms, prevention, and report guidance, constrained to medical topics.</p>
+          <a href="{{ url_for('healthcare_assistant') }}" class="btn btn-custom">Open Chat</a>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="premium-card h-100 p-4">
+          <span class="icon-chip mb-3"><i class="fas fa-file-medical"></i></span>
+          <h3>PDF-style reports</h3>
+          <p>Prediction outputs are formatted like diagnostic reports with patient details, parameters, risk notes, and disclaimer.</p>
+          <a href="{{ url_for('predictors_page') }}" class="btn btn-outline-premium">Generate Report</a>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="premium-card h-100 p-4">
+          <span class="icon-chip mb-3"><i class="fas fa-user-doctor"></i></span>
+          <h3>Doctor appointments</h3>
+          <p>Users can book consultations, while admins manage doctors, appointments, complaints, and platform activity.</p>
+          <a href="{{ url_for('auth.login') }}" class="btn btn-outline-premium">Access Dashboard</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="premium-section pb-5">
+  <div class="container">
+    <div class="premium-card p-4 p-lg-5 text-center" style="background:var(--ml-gradient-primary)!important;color:#fff!important;">
+      <span class="premium-badge mb-3" style="background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(255,255,255,0.22);">Secure and audit-ready</span>
+      <h2 class="text-white">Bring medical AI, reports, appointments, and admin analytics into one polished platform.</h2>
+      <p class="mx-auto mt-3" style="max-width:700px;color:rgba(255,255,255,0.82);">Medilife is built for demos, learning, and deployment-ready healthcare workflows with a professional interface.</p>
+      <div class="hero-actions justify-content-center">
+        <a href="{{ url_for('auth.register') }}" class="btn btn-lg btn-light rounded-pill px-4">Create Account</a>
+        <a href="{{ url_for('contact') }}" class="btn btn-lg btn-outline-light rounded-pill px-4">Contact</a>
+      </div>
+    </div>
+  </div>
 </section>
 {% endblock %}

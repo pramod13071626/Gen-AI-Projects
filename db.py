@@ -1,5 +1,14 @@
 import os
-from flask_sqlalchemy import SQLAlchemy
+
+try:
+    from flask_sqlalchemy import SQLAlchemy
+except ImportError:  # pragma: no cover - fallback for missing optional dependency
+    class SQLAlchemy:  # type: ignore
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def init_app(self, app):
+            raise ImportError("flask_sqlalchemy is required to initialize the database")
 
 db = SQLAlchemy()
 

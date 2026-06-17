@@ -1,4 +1,6 @@
 {% extends "main.html" %}
+{% block title %}Medilife - Login{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 {% block content %}
 <style>
 .auth-card{max-width:420px;margin:60px auto;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12)}
@@ -30,12 +32,12 @@
       <form method="POST" id="loginForm" novalidate>
         <div class="input-group mb-3">
           <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-          <input type="email" name="email" class="form-control" placeholder="Email" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$">
+          <input type="email" name="email" class="form-control" placeholder="e.g. pramoddeore1626@gmail.com" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$">
           <div class="invalid-feedback">Enter a valid email address</div>
         </div>
         <div class="input-group mb-3">
           <span class="input-group-text"><i class="fas fa-lock"></i></span>
-          <input type="password" name="password" class="form-control" placeholder="Password" required>
+          <input type="password" name="password" class="form-control" placeholder="e.g. Abc12345" required>
           <div class="invalid-feedback">Password is required</div>
         </div>
         <button type="submit" class="btn btn-gradient">Login</button>

@@ -1,4 +1,6 @@
 {% extends "main.html" %}
+{% block title %}Medilife - Profile{% endblock %}
+{% block body_class %}user-dashboard{% endblock %}
 {% block content %}
 <div style="background: #f0f2f5; min-height: calc(100vh - 200px); padding: 40px 0;">
   <div class="container">
@@ -57,7 +59,7 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Full Name</label>
-                  <input type="text" class="form-control" name="full_name" value="{{ current_user.full_name }}" required pattern="^[a-zA-Z\s.\-]{2,}$">
+                  <input type="text" class="form-control" name="full_name" value="{{ current_user.full_name }}" placeholder="e.g. Pramod Deore" required pattern="^[a-zA-Z\s.\-]{2,}$">
                   <div class="invalid-feedback">Only letters, spaces, dots and hyphens (min 2 chars)</div>
                 </div>
                 <div class="col-md-6 mb-3">
@@ -67,7 +69,7 @@
                 </div>
                 <div class="col-md-4 mb-3">
                   <label class="form-label fw-bold">Age</label>
-                  <input type="number" class="form-control" name="age" value="{{ current_user.age or '' }}" min="1" max="120">
+                  <input type="number" class="form-control" name="age" value="{{ current_user.age or '' }}" placeholder="e.g. 32" min="1" max="120">
                   <div class="invalid-feedback">Age must be 1-120</div>
                 </div>
                 <div class="col-md-4 mb-3">
@@ -90,16 +92,16 @@
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Phone</label>
-                  <input type="tel" class="form-control" name="phone" value="{{ current_user.phone or '' }}" pattern="^[\d]{10}$" title="10 digit phone number">
+                  <input type="tel" class="form-control" name="phone" value="{{ current_user.phone or '' }}" placeholder="e.g. 9876543210" pattern="^[\d]{10}$" title="10 digit phone number">
                   <div class="invalid-feedback">Enter a valid 10-digit phone number</div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Emergency Contact</label>
-                  <input type="text" class="form-control" name="emergency_contact" value="{{ current_user.emergency_contact or '' }}">
+                  <input type="text" class="form-control" name="emergency_contact" value="{{ current_user.emergency_contact or '' }}" placeholder="e.g. 9876543211">
                 </div>
                 <div class="col-12 mb-3">
                   <label class="form-label fw-bold">Address</label>
-                  <textarea class="form-control" name="address" rows="2">{{ current_user.address or '' }}</textarea>
+                  <textarea class="form-control" name="address" rows="2" placeholder="e.g. 12 MG Road, Pune">{{ current_user.address or '' }}</textarea>
                 </div>
               </div>
 
@@ -108,12 +110,12 @@
               <div class="row">
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">New Password</label>
-                  <input type="password" class="form-control" name="new_password" placeholder="New password" minlength="6" id="newPw">
+                  <input type="password" class="form-control" name="new_password" placeholder="e.g. Health123" minlength="6" id="newPw">
                   <div class="invalid-feedback">Min 6 chars, must include a letter and a number</div>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label class="form-label fw-bold">Confirm Password</label>
-                  <input type="password" class="form-control" name="confirm_password" placeholder="Confirm password" id="confirmPw">
+                  <input type="password" class="form-control" name="confirm_password" placeholder="e.g. Health123" id="confirmPw">
                   <div class="invalid-feedback">Passwords must match</div>
                 </div>
               </div>
@@ -144,7 +146,7 @@
         <form method="POST" action="{{ url_for('user.delete_account') }}">
           <div class="mb-3">
             <label class="form-label fw-bold">Type your password to confirm:</label>
-            <input type="password" class="form-control" name="password" required placeholder="Enter your password">
+            <input type="password" class="form-control" name="password" required placeholder="e.g. your current password">
           </div>
           <button type="submit" class="btn btn-danger w-100 fw-bold">Permanently Delete My Account</button>
         </form>

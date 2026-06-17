@@ -1,4 +1,6 @@
 {% extends "main.html" %}
+{% block title %}Medilife - Register{% endblock %}
+{% block body_class %}auth-page{% endblock %}
 {% block content %}
 <style>
 .auth-card{max-width:520px;margin:40px auto;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.12)}
@@ -26,20 +28,20 @@
       {% endwith %}
       <form method="POST" id="registerForm" novalidate>
         <div class="mb-3">
-          <input type="text" name="full_name" class="form-control" placeholder="Full Name" required pattern="^[a-zA-Z\s.\-]{2,}$" title="Only letters, spaces, dots and hyphens (min 2 chars)">
+          <input type="text" name="full_name" class="form-control" placeholder="e.g. Pramod Deore" required pattern="^[a-zA-Z\s.\-]{2,}$" title="Only letters, spaces, dots and hyphens (min 2 chars)">
           <div class="invalid-feedback">Only letters, spaces, dots and hyphens allowed (min 2 characters)</div>
         </div>
         <div class="mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Email" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address">
+          <input type="email" name="email" class="form-control" placeholder="e.g. pramod@example.com" required pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$" title="Enter a valid email address">
           <div class="invalid-feedback">Enter a valid email (e.g. user@example.com)</div>
         </div>
         <div class="mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password" required minlength="6" title="Min 6 chars with at least one letter and one number">
+          <input type="password" name="password" class="form-control" placeholder="e.g. Health123" required minlength="6" title="Min 6 chars with at least one letter and one number">
           <div class="invalid-feedback">Min 6 characters, must include a letter and a number</div>
         </div>
         <div class="row mb-3">
           <div class="col-6">
-            <input type="number" name="age" class="form-control" placeholder="Age" required min="1" max="120">
+            <input type="number" name="age" class="form-control" placeholder="e.g. 32" required min="1" max="120">
             <div class="invalid-feedback">Age must be 1-120</div>
           </div>
           <div class="col-6">
@@ -53,7 +55,7 @@
         </div>
         <div class="row mb-3">
           <div class="col-6">
-            <input type="tel" name="phone" class="form-control" placeholder="Phone (10 digits)" required pattern="^[\d]{10}$" title="Enter 10 digit phone number">
+            <input type="tel" name="phone" class="form-control" placeholder="e.g. 9876543210" required pattern="^[\d]{10}$" title="Enter 10 digit phone number">
             <div class="invalid-feedback">Enter a valid 10-digit phone number</div>
           </div>
           <div class="col-6">
@@ -67,10 +69,10 @@
           </div>
         </div>
         <div class="mb-3">
-          <input type="text" name="emergency_contact" class="form-control" placeholder="Emergency Contact" required>
+          <input type="text" name="emergency_contact" class="form-control" placeholder="e.g. 9876543211" required>
         </div>
         <div class="mb-3">
-          <textarea name="address" class="form-control" placeholder="Address" rows="2" required></textarea>
+          <textarea name="address" class="form-control" placeholder="e.g. 12 MG Road, Pune" rows="2" required></textarea>
         </div>
         <button type="submit" class="btn btn-gradient">Register</button>
       </form>

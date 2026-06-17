@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from sqlalchemy import func, case
+from sqlalchemy.exc import IntegrityError
 
 from models import User, DiseasePrediction, ChatbotHistory, Report, Complaint, Appointment, Doctor
 from validators import validate_email, validate_phone, validate_name, validate_password, validate_age
@@ -146,6 +147,11 @@ def edit_user(user_id):
             flash(err, "error")
             return redirect(url_for("admin.users"))
 
+    existing = User.query.filter(User.email == email, User.user_id != user.user_id).first()
+    if existing:
+        flash("Email already exists for another user", "error")
+        return redirect(url_for("admin.users"))
+
     user.full_name = name
     user.email = email
     user.phone = phone or None
@@ -154,11 +160,20 @@ def edit_user(user_id):
     user.blood_group = request.form.get("blood_group", "").strip() or None
     user.address = request.form.get("address", "").strip() or None
     user.emergency_contact = request.form.get("emergency_contact", "").strip() or None
-    user.is_admin = request.form.get("is_admin") == "on"
+    requested_admin = request.form.get("is_admin") == "on"
+    if user.user_id == current_user.user_id and not requested_admin:
+        flash("You cannot remove admin access from your own account while signed in", "error")
+        return redirect(url_for("admin.users"))
+    user.is_admin = requested_admin
     if pwd:
         from werkzeug.security import generate_password_hash
         user.password_hash = generate_password_hash(pwd)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except IntegrityError:
+        db.session.rollback()
+        flash("Unable to update user because the email is already used", "error")
+        return redirect(url_for("admin.users"))
     flash(f"User '{user.full_name}' updated", "success")
     return redirect(url_for("admin.users"))
 

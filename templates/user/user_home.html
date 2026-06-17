@@ -1,155 +1,128 @@
 {% extends "main.html" %}
+{% block title %}Medilife - User Dashboard{% endblock %}
+{% block body_class %}user-dashboard{% endblock %}
 {% block content %}
-<!-- Hero Section -->
-<div style="background: linear-gradient(135deg, #1a237e 0%, #3498db 100%); color: white; padding: 70px 0 50px;">
+<section class="premium-section pb-4" style="background:var(--ml-gradient-primary);color:#fff;">
   <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-7" data-aos="fade-right">
-        <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; color: #ffffff;">
-          Welcome back, {{ current_user.full_name.split()[0] }}! 👋
-        </h1>
-        <p style="font-size: 1.1rem; color: #e3f2fd; margin-bottom: 30px;">
-          Your <span style="color: #ffffff; font-weight: 600;">AI-powered</span> health companion. Get instant disease screenings, chat with our healthcare assistant, and track your health journey.
-        </p>
-        <div class="d-flex gap-3 flex-wrap">
-          <a href="{{ url_for('predictors_page') }}" class="btn btn-light btn-lg px-4" style="font-weight: 600; border-radius: 10px; color: #1a237e;">
-            <i class="fas fa-stethoscope"></i> Start Screening
-          </a>
-          <a href="{{ url_for('healthcare_assistant') }}" class="btn btn-lg px-4" style="font-weight: 600; border-radius: 10px; border: 2px solid white; color: white;">
-            <i class="fas fa-robot"></i> AI Assistant
-          </a>
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7" data-aos="fade-up">
+        <div class="premium-badge mb-3" style="background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(255,255,255,0.22);">
+          <span class="pulse-dot"></span> Personal health workspace
+        </div>
+        <h1 class="text-white" style="font-weight:900;">Welcome back, {{ current_user.full_name.split()[0] }}.</h1>
+        <p style="color:rgba(255,255,255,0.82);max-width:680px;">Run screenings, review recent risk results, ask the AI assistant, and manage appointments from one calm healthcare dashboard.</p>
+        <div class="hero-actions">
+          <a href="{{ url_for('predictors_page') }}" class="btn btn-light btn-lg rounded-pill px-4"><i class="fas fa-stethoscope me-2"></i>Start Screening</a>
+          <a href="{{ url_for('healthcare_assistant') }}" class="btn btn-outline-light btn-lg rounded-pill px-4"><i class="fas fa-robot me-2"></i>AI Assistant</a>
         </div>
       </div>
       <div class="col-lg-5 text-center d-none d-lg-block" data-aos="fade-left">
-        <img src="{{ url_for('static', filename='Healthcare_doc.png') }}" alt="Healthcare" style="max-width: 320px; filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));">
+        <img src="{{ url_for('static', filename='Healthcare_doc.png') }}" alt="Healthcare" style="max-height:330px;filter:drop-shadow(0 24px 45px rgba(0,0,0,0.28));">
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Quick Actions -->
-<div style="background: #f8f9fa; padding: 40px 0;">
+<section class="premium-section pt-4">
   <div class="container">
+    <div class="row g-4 mb-4">
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value">{{ recent_predictions|length if recent_predictions else 0 }}</div><div class="metric-label">Recent Results</div></div></div>
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value">7</div><div class="metric-label">Predictors</div></div></div>
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value">AI</div><div class="metric-label">Assistant Ready</div></div></div>
+      <div class="col-md-3 col-6"><div class="metric-card"><div class="metric-value">PDF</div><div class="metric-label">Report Output</div></div></div>
+    </div>
+
     <div class="row g-4">
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-        <a href="{{ url_for('predictors_page') }}" style="text-decoration: none;">
-          <div class="card border-0 shadow-sm h-100 text-center p-4" style="border-radius: 15px; transition: transform 0.3s;">
-            <div style="width: 60px; height: 60px; background: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-              <i class="fas fa-microscope" style="font-size: 1.5rem; color: #1565c0;"></i>
-            </div>
-            <h6 style="color: #1a237e; font-weight: 700;">Disease Predictors</h6>
-            <p class="text-muted small mb-0">7 AI models for comprehensive health screening</p>
+      <div class="col-lg-4">
+        <a href="{{ url_for('predictors_page') }}" class="text-decoration-none">
+          <div class="health-action-card">
+            <span class="icon-chip mb-3"><i class="fas fa-microscope"></i></span>
+            <h6>Disease Predictors</h6>
+            <p>Access diabetes, heart, cancer, kidney, liver, malaria, and pneumonia screening.</p>
           </div>
         </a>
       </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-        <a href="{{ url_for('healthcare_assistant') }}" style="text-decoration: none;">
-          <div class="card border-0 shadow-sm h-100 text-center p-4" style="border-radius: 15px; transition: transform 0.3s;">
-            <div style="width: 60px; height: 60px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-              <i class="fas fa-comments" style="font-size: 1.5rem; color: #2e7d32;"></i>
-            </div>
-            <h6 style="color: #1a237e; font-weight: 700;">Healthcare Assistant</h6>
-            <p class="text-muted small mb-0">AI chatbot for symptom analysis & guidance</p>
+      <div class="col-lg-4">
+        <a href="{{ url_for('user.history') }}" class="text-decoration-none">
+          <div class="health-action-card">
+            <span class="icon-chip mb-3"><i class="fas fa-clock-rotate-left"></i></span>
+            <h6>Prediction History</h6>
+            <p>Review past screenings, confidence scores, and report-ready output.</p>
           </div>
         </a>
       </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-        <a href="{{ url_for('user.history') }}" style="text-decoration: none;">
-          <div class="card border-0 shadow-sm h-100 text-center p-4" style="border-radius: 15px; transition: transform 0.3s;">
-            <div style="width: 60px; height: 60px; background: #fff3e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-              <i class="fas fa-history" style="font-size: 1.5rem; color: #f57c00;"></i>
-            </div>
-            <h6 style="color: #1a237e; font-weight: 700;">My History</h6>
-            <p class="text-muted small mb-0">View past results & download reports</p>
+      <div class="col-lg-4">
+        <a href="{{ url_for('user.appointments') }}" class="text-decoration-none">
+          <div class="health-action-card">
+            <span class="icon-chip mb-3"><i class="fas fa-calendar-check"></i></span>
+            <h6>Appointments</h6>
+            <p>Book specialists and keep track of consultation schedules.</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-4">
+        <a href="{{ url_for('healthcare_assistant') }}" class="text-decoration-none">
+          <div class="health-action-card">
+            <span class="icon-chip mb-3"><i class="fas fa-robot"></i></span>
+            <h6>Healthcare Assistant</h6>
+            <p>Ask health questions and get structured prevention guidance.</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-4">
+        <a href="{{ url_for('user.health_trends') }}" class="text-decoration-none">
+          <div class="health-action-card">
+            <span class="icon-chip mb-3"><i class="fas fa-chart-line"></i></span>
+            <h6>Health Trends</h6>
+            <p>Track health records and risk movement over time.</p>
+          </div>
+        </a>
+      </div>
+      <div class="col-lg-4">
+        <a href="{{ url_for('user.support') }}" class="text-decoration-none">
+          <div class="health-action-card">
+            <span class="icon-chip mb-3"><i class="fas fa-headset"></i></span>
+            <h6>Support</h6>
+            <p>Raise tickets for help, reports, appointments, or account issues.</p>
           </div>
         </a>
       </div>
     </div>
 
-    <!-- Second row of quick actions -->
-    <div class="row g-4 mt-1">
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
-        <a href="{{ url_for('user.appointments') }}" style="text-decoration: none;">
-          <div class="card border-0 shadow-sm h-100 text-center p-4" style="border-radius: 15px; transition: transform 0.3s;">
-            <div style="width: 60px; height: 60px; background: #fce4ec; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-              <i class="fas fa-calendar-check" style="font-size: 1.5rem; color: #c2185b;"></i>
-            </div>
-            <h6 style="color: #1a237e; font-weight: 700;">Appointments</h6>
-            <p class="text-muted small mb-0">Book & manage doctor appointments</p>
-          </div>
-        </a>
+    {% if recent_predictions %}
+    <div class="premium-card mt-5 p-4">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <div>
+          <span class="section-eyebrow">Recent screenings</span>
+          <h3 class="mt-2 mb-0">Latest health signals</h3>
+        </div>
+        <a href="{{ url_for('user.history') }}" class="btn btn-outline-premium">View All</a>
       </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="500">
-        <a href="{{ url_for('user.health_trends') }}" style="text-decoration: none;">
-          <div class="card border-0 shadow-sm h-100 text-center p-4" style="border-radius: 15px; transition: transform 0.3s;">
-            <div style="width: 60px; height: 60px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-              <i class="fas fa-chart-line" style="font-size: 1.5rem; color: #2e7d32;"></i>
-            </div>
-            <h6 style="color: #1a237e; font-weight: 700;">Health Trends</h6>
-            <p class="text-muted small mb-0">Track your health data over time</p>
-          </div>
-        </a>
-      </div>
-      <div class="col-md-4" data-aos="fade-up" data-aos-delay="600">
-        <a href="{{ url_for('user.support') }}" style="text-decoration: none;">
-          <div class="card border-0 shadow-sm h-100 text-center p-4" style="border-radius: 15px; transition: transform 0.3s;">
-            <div style="width: 60px; height: 60px; background: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-              <i class="fas fa-headset" style="font-size: 1.5rem; color: #1565c0;"></i>
-            </div>
-            <h6 style="color: #1a237e; font-weight: 700;">Support</h6>
-            <p class="text-muted small mb-0">Get help & raise tickets</p>
-          </div>
-        </a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Recent Predictions -->
-{% if recent_predictions %}
-<div style="padding: 40px 0;">
-  <div class="container">
-    <h5 style="color: #1a237e; font-weight: 700; margin-bottom: 20px;"><i class="fas fa-clock"></i> Recent Screenings</h5>
-    <div class="row g-3">
-      {% for pred in recent_predictions %}
-      <div class="col-md-4">
-        <div class="card border-0 shadow-sm p-3" style="border-radius: 12px; border-left: 4px solid {% if pred.prediction_result == '1' %}#c62828{% else %}#2e7d32{% endif %} !important;">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <strong style="text-transform: capitalize; color: #1a237e;">{{ pred.disease_name }}</strong>
-              <br><small class="text-muted">{{ pred.prediction_date.strftime('%d %b %Y') }}</small>
-            </div>
-            <div class="text-end">
+      <div class="row g-3">
+        {% for pred in recent_predictions %}
+        <div class="col-md-4">
+          <div class="premium-card p-3 h-100">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+              <div>
+                <strong class="text-capitalize">{{ pred.disease_name }}</strong>
+                <div class="small text-muted">{{ pred.prediction_date.strftime('%d %b %Y') }}</div>
+              </div>
               {% if pred.prediction_result == '1' %}
-                <span class="badge" style="background: #ffebee; color: #c62828; padding: 4px 10px;">Positive</span>
+                <span class="badge-danger">High Signal</span>
               {% else %}
-                <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 4px 10px;">Negative</span>
+                <span class="badge-success">Low Signal</span>
               {% endif %}
-              <br><small><strong>{{ "%.0f"|format(pred.confidence_score) if pred.confidence_score else 'N/A' }}%</strong></small>
+            </div>
+            <div class="mt-3">
+              <span class="metric-label">Confidence</span>
+              <div class="metric-value" style="font-size:1.5rem;">{{ "%.0f"|format(pred.confidence_score) if pred.confidence_score else 'N/A' }}%</div>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-    <div class="text-center mt-3">
-      <a href="{{ url_for('user.history') }}" class="btn btn-sm" style="background: #e8eaf6; color: #1a237e; font-weight: 600;">View All History →</a>
-    </div>
+    {% endif %}
   </div>
-</div>
-{% endif %}
-
-<!-- Features -->
-<div style="background: #f8f9fa; padding: 40px 0;">
-  <div class="container">
-    <div class="row g-4 text-center">
-      <div class="col-6 col-md-3"><div style="font-size: 2rem;">🔬</div><h6 style="font-weight: 700; font-size: 0.85rem;">7 Disease Models</h6></div>
-      <div class="col-6 col-md-3"><div style="font-size: 2rem;">📊</div><h6 style="font-weight: 700; font-size: 0.85rem;">High Accuracy</h6></div>
-      <div class="col-6 col-md-3"><div style="font-size: 2rem;">📋</div><h6 style="font-weight: 700; font-size: 0.85rem;">Instant Reports</h6></div>
-      <div class="col-6 col-md-3"><div style="font-size: 2rem;">🤖</div><h6 style="font-weight: 700; font-size: 0.85rem;">AI Assistant</h6></div>
-    </div>
-  </div>
-</div>
-
-<style>.card:hover{transform:translateY(-5px)!important;box-shadow:0 8px 25px rgba(0,0,0,0.12)!important;}</style>
+</section>
 {% endblock %}

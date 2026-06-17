@@ -1,35 +1,67 @@
 {% extends "admin/base_admin.html" %}
 {% block page_title %}Chat Logs{% endblock %}
+{% block page_subtitle %}Review patient assistant conversations and response quality from one searchable-style log view.{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <span class="text-muted" style="font-size: 0.85rem;">{{ logs | length }} chat sessions</span>
+<div class="admin-table-toolbar data-card mb-3">
+  <div>
+    <h6 class="admin-table-title">AI assistant sessions</h6>
+    <div class="admin-toolbar-meta">{{ logs | length }} chat messages logged</div>
+  </div>
 </div>
 
 <div class="data-card">
   <div class="card-body p-0">
     <table class="admin-table">
-      <thead><tr><th>#</th><th>User</th><th>User Message</th><th>Bot Response</th><th>Time</th></tr></thead>
+      <thead><tr><th>ID</th><th>User</th><th>User Message</th><th>Bot Response</th><th>Time</th></tr></thead>
       <tbody>
         {% for chat in logs %}
         <tr>
-          <td>{{ chat.chat_id }}</td>
-          <td><strong>{{ chat.user.full_name if chat.user else 'Anonymous' }}</strong></td>
-          <td style="max-width: 250px;">
-            <div style="max-height: 60px; overflow: hidden; font-size: 0.82rem; color: #334155;">
-              {{ chat.user_message[:120] }}{% if chat.user_message|length > 120 %}...{% endif %}
+          <td><span class="admin-id">#{{ chat.chat_id }}</span></td>
+          <td>
+            <div class="identity-cell">
+              <div class="identity-avatar">{{ chat.user.full_name[0] | upper if chat.user and chat.user.full_name else 'A' }}</div>
+              <div>
+                <div class="identity-title">{{ chat.user.full_name if chat.user else 'Anonymous' }}</div>
+                <div class="identity-subtitle">Assistant session</div>
+              </div>
             </div>
           </td>
-          <td style="max-width: 300px;">
-            <div style="max-height: 60px; overflow: hidden; font-size: 0.82rem; color: #64748b;">
-              {{ chat.bot_response[:150] }}{% if chat.bot_response|length > 150 %}...{% endif %}
-            </div>
+          <td class="admin-text-cell"><div class="admin-clamp">{{ chat.user_message }}</div></td>
+          <td class="admin-text-cell">
+            <div class="admin-clamp">{{ chat.bot_response | striptags }}</div>
+            <button type="button" class="btn btn-link p-0 mt-1 admin-read-more" data-bs-toggle="modal" data-bs-target="#chatLog{{ chat.chat_id }}">Read more</button>
           </td>
-          <td><small>{{ chat.chat_time.strftime('%d %b %Y %H:%M') }}</small></td>
+          <td class="admin-nowrap"><small>{{ chat.chat_time.strftime('%d %b %Y, %H:%M') }}</small></td>
         </tr>
         {% endfor %}
-        {% if not logs %}<tr><td colspan="5" class="text-center text-muted py-4">No chat logs yet.</td></tr>{% endif %}
+        {% if not logs %}<tr><td colspan="5"><div class="admin-empty-state"><i class="fas fa-comments"></i><h6>No chat logs yet</h6><p class="mb-0">Conversations with the AI assistant will appear here.</p></div></td></tr>{% endif %}
       </tbody>
     </table>
   </div>
 </div>
+
+{% for chat in logs %}
+<div class="modal fade" id="chatLog{{ chat.chat_id }}" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header">
+      <div>
+        <h6 class="modal-title">Full Chat #{{ chat.chat_id }}</h6>
+        <div class="admin-muted">{{ chat.chat_time.strftime('%d %b %Y, %H:%M') }} · {{ chat.user.full_name if chat.user else 'Anonymous' }}</div>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">
+      <div class="chat-log-full-block mb-3">
+        <div class="chat-log-label">User message</div>
+        <div class="chat-log-message">{{ chat.user_message }}</div>
+      </div>
+      <div class="chat-log-full-block">
+        <div class="chat-log-label">Bot response</div>
+        <div class="chat-log-message bot-response-full">{{ chat.bot_response | safe }}</div>
+      </div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-outline-premium" data-bs-dismiss="modal">Close</button></div>
+  </div></div>
+</div>
+{% endfor %}
 {% endblock %}

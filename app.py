@@ -32,8 +32,8 @@ load_dotenv()
 if openai:
     openai.api_key = os.getenv("OPENAI_API_KEY")
 
-OLLAMA_API_URL = "http://localhost:11434/api/generate"
-OLLAMA_MODEL = "qwen2.5-coder:7b"
+OLLAMA_API_URL = os.getenv("OLLAMA_API_URL", "http://localhost:11434/api/generate")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "codellama:7b")
 
 messages = []
 messages.append({"role": "system", "content": "You are an AI healthcare assistant which greets people as an advanced healthcare assistant and diagnose symptoms to identify disease and provide consultation besides this if something is asked you would say you're a personal AI healthcare assistant and could not discuss any other topic than healthcare and medical"})
@@ -86,17 +86,24 @@ def load_legacy_h5(path):
     return model
 
 
+def repair_sklearn_tree_model(model):
+    for estimator in getattr(model, 'estimators_', []):
+        if not hasattr(estimator, 'monotonic_cst'):
+            estimator.monotonic_cst = None
+    return model
+
+
 def load_models():
     models = {}
     try:
         model_dir = os.path.join(os.path.dirname(__file__), 'models')
         print(f"Loading models from: {model_dir}")
 
-        models['diabetes'] = pickle.load(open(os.path.join(model_dir, 'diabetes.pkl'), 'rb'))
-        models['cancer'] = pickle.load(open(os.path.join(model_dir, 'cancer.pkl'), 'rb'))
-        models['heart'] = pickle.load(open(os.path.join(model_dir, 'heart.pkl'), 'rb'))
-        models['kidney'] = pickle.load(open(os.path.join(model_dir, 'kidney.pkl'), 'rb'))
-        models['liver'] = pickle.load(open(os.path.join(model_dir, 'liver.pkl'), 'rb'))
+        models['diabetes'] = repair_sklearn_tree_model(pickle.load(open(os.path.join(model_dir, 'diabetes.pkl'), 'rb')))
+        models['cancer'] = repair_sklearn_tree_model(pickle.load(open(os.path.join(model_dir, 'cancer.pkl'), 'rb')))
+        models['heart'] = repair_sklearn_tree_model(pickle.load(open(os.path.join(model_dir, 'heart.pkl'), 'rb')))
+        models['kidney'] = repair_sklearn_tree_model(pickle.load(open(os.path.join(model_dir, 'kidney.pkl'), 'rb')))
+        models['liver'] = repair_sklearn_tree_model(pickle.load(open(os.path.join(model_dir, 'liver.pkl'), 'rb')))
 
         try:
             models['malaria'] = load_legacy_h5(os.path.join(model_dir, 'malaria.h5'))
@@ -124,28 +131,39 @@ except Exception as e:
     ML_MODELS = {}
 
 
-def predict(values, disease_type):
+def predict(values, disease_type, feature_names=None):
     try:
-        values = np.asarray(values)
+        values = np.asarray(values, dtype=float)
         model = ML_MODELS.get(disease_type)
         if model is None:
             return None, 0
 
+        input_data = values.reshape(1, -1)
+        model_feature_names = list(getattr(model, 'feature_names_in_', []))
+        if model_feature_names and feature_names:
+            import pandas as pd
+            input_data = pd.DataFrame([values], columns=feature_names)
+
         if hasattr(model, 'predict_proba'):
-            pred_proba = model.predict_proba(values.reshape(1, -1))[0]
-            pred = model.predict(values.reshape(1, -1))[0]
+            pred = model.predict(input_data)[0]
+            pred_proba = model.predict_proba(input_data)[0]
             predicted_label = pred
             classes = getattr(model, 'classes_', None)
             if classes is not None:
                 try:
+                    if len(classes) == 1:
+                        return pred, 100
                     predicted_idx = list(classes).index(predicted_label)
-                    confidence = round(float(pred_proba[predicted_idx]) * 100, 2)
+                    if predicted_idx < len(pred_proba):
+                        confidence = round(float(pred_proba[predicted_idx]) * 100, 2)
+                    else:
+                        confidence = 100
                 except Exception:
                     confidence = round(float(np.max(pred_proba)) * 100, 2)
             else:
                 confidence = round(float(np.max(pred_proba)) * 100, 2)
         else:
-            pred = model.predict(values.reshape(1, -1))[0]
+            pred = model.predict(input_data)[0]
             confidence = 100
         return pred, confidence
     except Exception as e:
@@ -247,7 +265,7 @@ def chat():
                 result = response.json()
                 reply = result.get('response', 'Unable to generate response.').strip()
             else:
-                reply = "Error connecting to Ollama. Make sure Ollama server is running on http://localhost:11434"
+                reply = f"Error connecting to Ollama. Make sure Ollama server is running on http://localhost:11434 and model '{OLLAMA_MODEL}' is installed."
 
         except requests.exceptions.ConnectionError:
             reply = "Ollama server is not running. Please start it with: ollama serve"
@@ -352,6 +370,20 @@ def predict_disease():
 
             model = ML_MODELS[disease_type]
             model_features = list(getattr(model, 'feature_names_in_', []))
+            if not model_features:
+                fallback_features = {
+                    'diabetes': [
+                        'pregnancies',
+                        'glucose',
+                        'bloodpressure',
+                        'skinthickness',
+                        'insulin',
+                        'bmi',
+                        'dpf',
+                        'age',
+                    ],
+                }
+                model_features = fallback_features.get(disease_type, [])
 
             FIELD_MAPPINGS = {
                 'diabetes': {
@@ -399,7 +431,7 @@ def predict_disease():
             if missing:
                 raise ValueError(f"{disease_type.capitalize()} model inputs missing: {missing}")
 
-            prediction, confidence = predict(values, disease_type)
+            prediction, confidence = predict(values, disease_type, model_features)
 
             if prediction is None:
                 raise ValueError(f"Unable to make prediction for {disease_type}")

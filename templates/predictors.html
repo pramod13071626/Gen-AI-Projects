@@ -1,136 +1,41 @@
 {% extends "main.html" %}
+{% block title %}Medilife - Disease Predictors{% endblock %}
+{% block body_class %}prediction-page{% endblock %}
 {% block content %}
-<div style="background: #f0f2f5; min-height: calc(100vh - 200px); padding: 40px 0;">
+<section class="premium-section">
   <div class="container">
-    <div class="text-center mb-5" data-aos="fade-up">
-      <h1 style="color: #1a237e; font-weight: 700; font-size: 2.5rem;">Disease Predictors</h1>
-      <p class="text-muted" style="max-width: 600px; margin: 0 auto;">Select a disease predictor below. Our AI models analyze your health parameters and provide instant screening results.</p>
+    <div class="section-heading-premium">
+      <span class="section-eyebrow">Prediction suite</span>
+      <h1 class="mt-3">Choose an AI screening workflow</h1>
+      <p>Each predictor includes guided inputs, clear result interpretation, confidence scoring, and report-ready output.</p>
     </div>
 
     <div class="row g-4">
-      <!-- Diabetes -->
-      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
-        <a href="{{ url_for('diabetesPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #3498db, #2980b9);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #e3f2fd; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-tint" style="font-size: 1.8rem; color: #1565c0;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Diabetes</h5>
-              <p class="text-muted small mb-3">Predict diabetes risk based on glucose, BMI, insulin levels and more.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">98.25% Accuracy</span>
+      {% set cards = [
+        ('Diabetes','diabetesPage','fa-droplet','98.25%','Glucose, BMI, insulin, blood pressure, age and pedigree function.','#0f7ab8'),
+        ('Breast Cancer','cancerPage','fa-ribbon','98.25%','Tumor radius, perimeter, smoothness, concavity and worst-value features.','#c2185b'),
+        ('Heart Disease','heartPage','fa-heart-pulse','85.25%','Blood pressure, cholesterol, ECG, exercise angina and vessel indicators.','#dc2626'),
+        ('Kidney Disease','kidneyPage','fa-vial','99%','Specific gravity, albumin, glucose, urea, creatinine and blood counts.','#f59e0b'),
+        ('Liver Disease','liverPage','fa-flask','78%','Bilirubin, enzymes, proteins, albumin and A/G ratio screening.','#16a34a'),
+        ('Malaria','malariaPage','fa-microscope','96%','Upload a blood smear image for deep learning classification.','#7c3aed'),
+        ('Pneumonia','pneumoniaPage','fa-lungs','95%','Upload a chest X-ray image for pneumonia screening.','#0891b2')
+      ] %}
+      {% for title, endpoint, icon, accuracy, desc, color in cards %}
+      <div class="col-lg-4 col-md-6">
+        <a href="{{ url_for(endpoint) }}" class="text-decoration-none">
+          <div class="coverage-card">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+              <span class="icon-chip" style="color:{{ color }};"><i class="fas {{ icon }}"></i></span>
+              <span class="badge-success">{{ accuracy }}</span>
             </div>
+            <h4>{{ title }}</h4>
+            <p>{{ desc }}</p>
+            <span class="small fw-bold" style="color:var(--ml-primary);">Open predictor <i class="fas fa-arrow-right ms-1"></i></span>
           </div>
         </a>
       </div>
-
-      <!-- Breast Cancer -->
-      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="150">
-        <a href="{{ url_for('cancerPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #e91e63, #c2185b);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #fce4ec; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-ribbon" style="font-size: 1.8rem; color: #c2185b;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Breast Cancer</h5>
-              <p class="text-muted small mb-3">Analyze tumor characteristics to classify as benign or malignant.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">98.25% Accuracy</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- Heart Disease -->
-      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-        <a href="{{ url_for('heartPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #f44336, #d32f2f);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #ffebee; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-heartbeat" style="font-size: 1.8rem; color: #d32f2f;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Heart Disease</h5>
-              <p class="text-muted small mb-3">Assess cardiovascular risk using cholesterol, BP, ECG data.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">85.25% Accuracy</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- Kidney Disease -->
-      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
-        <a href="{{ url_for('kidneyPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #ff9800, #f57c00);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #fff3e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-kidneys" style="font-size: 1.8rem; color: #f57c00;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Kidney Disease</h5>
-              <p class="text-muted small mb-3">Detect chronic kidney disease from blood and urine parameters.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">99% Accuracy</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- Liver Disease -->
-      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-        <a href="{{ url_for('liverPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #4caf50, #388e3c);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #e8f5e9; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-liver" style="font-size: 1.8rem; color: #388e3c;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Liver Disease</h5>
-              <p class="text-muted small mb-3">Screen for liver disease using bilirubin, enzymes, proteins.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">78% Accuracy</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- Malaria -->
-      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="350">
-        <a href="{{ url_for('malariaPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #9c27b0, #7b1fa2);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #f3e5f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-microscope" style="font-size: 1.8rem; color: #7b1fa2;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Malaria</h5>
-              <p class="text-muted small mb-3">Upload blood smear image for AI-powered malaria detection.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">96% Accuracy</span>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- Pneumonia -->
-      <div class="col-lg-4 col-md-6 mx-auto" data-aos="fade-up" data-aos-delay="400">
-        <a href="{{ url_for('pneumoniaPage') }}" style="text-decoration: none;">
-          <div class="card h-100 border-0 shadow-sm" style="border-radius: 15px; overflow: hidden; transition: transform 0.3s;">
-            <div style="height: 8px; background: linear-gradient(90deg, #00bcd4, #0097a7);"></div>
-            <div class="card-body text-center p-4">
-              <div style="width: 70px; height: 70px; background: #e0f7fa; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
-                <i class="fas fa-lungs" style="font-size: 1.8rem; color: #0097a7;"></i>
-              </div>
-              <h5 style="color: #1a237e; font-weight: 700;">Pneumonia</h5>
-              <p class="text-muted small mb-3">Upload chest X-ray for AI-powered pneumonia detection.</p>
-              <span class="badge" style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px;">95% Accuracy</span>
-            </div>
-          </div>
-        </a>
-      </div>
+      {% endfor %}
     </div>
   </div>
-</div>
-
-<style>
-  .card:hover { transform: translateY(-8px) !important; box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important; }
-</style>
+</section>
 {% endblock %}

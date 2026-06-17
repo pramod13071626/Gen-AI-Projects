@@ -1,5 +1,6 @@
 {% extends "admin/base_admin.html" %}
 {% block page_title %}Health Overview{% endblock %}
+{% block page_subtitle %}Analyze disease distribution, confidence trends, and recent screening activity.{% endblock %}
 {% block content %}
 <!-- KPI Cards per Disease -->
 <div class="row g-3 mb-4">
@@ -22,7 +23,7 @@
 <div class="row g-4">
   <!-- Pie Chart -->
   <div class="col-lg-4">
-    <div class="data-card">
+    <div class="data-card chart-card">
       <div class="card-header"><h6><i class="fas fa-chart-pie me-2"></i>Disease Distribution</h6></div>
       <div class="card-body"><canvas id="healthChart" height="200"></canvas></div>
     </div>
@@ -30,7 +31,7 @@
 
   <!-- Positive vs Negative -->
   <div class="col-lg-4">
-    <div class="data-card">
+    <div class="data-card chart-card">
       <div class="card-header"><h6><i class="fas fa-chart-bar me-2"></i>Positive vs Negative</h6></div>
       <div class="card-body"><canvas id="posNegChart" height="200"></canvas></div>
     </div>
@@ -38,7 +39,7 @@
 
   <!-- Avg Confidence -->
   <div class="col-lg-4">
-    <div class="data-card">
+    <div class="data-card chart-card">
       <div class="card-header"><h6><i class="fas fa-percentage me-2"></i>Avg Confidence by Disease</h6></div>
       <div class="card-body"><canvas id="confChart" height="200"></canvas></div>
     </div>
@@ -55,9 +56,18 @@
           <thead><tr><th>User</th><th>Email</th><th>Tests</th></tr></thead>
           <tbody>
             {% for name, email, count in top_users %}
-            <tr><td><strong>{{ name }}</strong></td><td>{{ email }}</td><td><span class="badge-info">{{ count }}</span></td></tr>
+            <tr>
+              <td>
+                <div class="identity-cell">
+                  <div class="identity-avatar">{{ name[0] | upper if name else 'U' }}</div>
+                  <div class="identity-title">{{ name }}</div>
+                </div>
+              </td>
+              <td>{{ email }}</td>
+              <td><span class="badge-info">{{ count }} tests</span></td>
+            </tr>
             {% endfor %}
-            {% if not top_users %}<tr><td colspan="3" class="text-center text-muted py-3">No activity yet.</td></tr>{% endif %}
+            {% if not top_users %}<tr><td colspan="3"><div class="admin-empty-state"><i class="fas fa-user-clock"></i><h6>No activity yet</h6><p class="mb-0">Top users appear after screening activity starts.</p></div></td></tr>{% endif %}
           </tbody>
         </table>
       </div>
@@ -74,13 +84,17 @@
       <tbody>
         {% for p in recent %}
         <tr>
-          <td>{{ p.user.full_name if p.user else 'Unknown' }}</td>
-          <td style="text-transform: capitalize;">{{ p.disease_name }}</td>
+          <td><strong>{{ p.user.full_name if p.user else 'Unknown' }}</strong></td>
+          <td class="text-capitalize">{{ p.disease_name }}</td>
           <td>{% if p.prediction_result == '1' %}<span class="badge-danger">Positive</span>{% else %}<span class="badge-success">Negative</span>{% endif %}</td>
-          <td>{{ "%.0f" | format(p.confidence_score) if p.confidence_score else 'N/A' }}%</td>
-          <td>{{ p.prediction_date.strftime('%d %b %H:%M') }}</td>
+          <td>
+            {% set conf = p.confidence_score or 0 %}
+            <div class="d-flex align-items-center gap-2"><div class="admin-progress"><span style="width: {{ conf }}%;"></span></div><strong>{{ "%.0f" | format(conf) }}%</strong></div>
+          </td>
+          <td class="admin-nowrap">{{ p.prediction_date.strftime('%d %b %H:%M') }}</td>
         </tr>
         {% endfor %}
+        {% if not recent %}<tr><td colspan="5"><div class="admin-empty-state"><i class="fas fa-clock"></i><h6>No recent predictions</h6><p class="mb-0">Completed screenings will show here.</p></div></td></tr>{% endif %}
       </tbody>
     </table>
   </div>

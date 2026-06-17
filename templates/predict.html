@@ -258,7 +258,7 @@
                     <p class="risk-note">Borderline result. Follow-up testing advised.</p>
                 {% else %}
                     <span class="risk-badge risk-safe">LOW RISK</span>
-                    <p class="risk-note">Results appear normal. Continue regular health checkups.</p>
+                    <p class="risk-note">The AI screening result is negative. Continue regular health checkups, and review any abnormal parameter values with a clinician if they persist or symptoms are present.</p>
                 {% endif %}
             </div>
         </div>
@@ -293,22 +293,38 @@
 
         <!-- Doctor Recommendation & Appointment -->
         {% if pred is defined and pred is not none %}
-        <div class="doctor-recommendation" style="margin: 20px 0; padding: 16px; background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius: 10px; border-left: 4px solid #2e7d32;">
-            <h3 style="margin: 0 0 10px; color: #1b5e20; font-size: 15px;">
-                <i class="fas fa-user-md"></i> Recommended: Consult a Specialist
-            </h3>
-            <p style="font-size: 13px; color: #333; margin-bottom: 12px;">
-                Based on your <strong>{{ disease_type | title }}</strong> screening result, we recommend consulting a specialist for further evaluation.
-            </p>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="/appointments" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #1a237e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
-                    <i class="fas fa-calendar-check"></i> Book Appointment
-                </a>
-                <a href="/HealthCareAssistant" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #0277bd; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
-                    <i class="fas fa-comments"></i> Ask AI Assistant
-                </a>
+            {% if pred == 1 %}
+            <div class="doctor-recommendation" style="margin: 20px 0; padding: 16px; background: linear-gradient(135deg, #fff3e0, #fff8e1); border-radius: 10px; border-left: 4px solid #ef6c00;">
+                <h3 style="margin: 0 0 10px; color: #b45309; font-size: 15px;">
+                    <i class="fas fa-user-md"></i> Recommended: Consult a Specialist
+                </h3>
+                <p style="font-size: 13px; color: #333; margin-bottom: 12px;">
+                    Based on your <strong>{{ disease_type | title }}</strong> screening result, please consult a qualified specialist for further clinical evaluation.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="/appointments" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #1a237e; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                        <i class="fas fa-calendar-check"></i> Book Appointment
+                    </a>
+                    <a href="/HealthCareAssistant" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #0277bd; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                        <i class="fas fa-comments"></i> Ask AI Assistant
+                    </a>
+                </div>
             </div>
-        </div>
+            {% else %}
+            <div class="doctor-recommendation" style="margin: 20px 0; padding: 16px; background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius: 10px; border-left: 4px solid #2e7d32;">
+                <h3 style="margin: 0 0 10px; color: #1b5e20; font-size: 15px;">
+                    <i class="fas fa-circle-check"></i> No Specialist Referral Triggered
+                </h3>
+                <p style="font-size: 13px; color: #333; margin-bottom: 12px;">
+                    Your <strong>{{ disease_type | title }}</strong> AI screening result is negative. Keep routine health checkups and use the assistant if you need help understanding any abnormal parameter values.
+                </p>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <a href="/HealthCareAssistant" class="btn-recommend" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 18px; background: #0277bd; color: #fff; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 500;">
+                        <i class="fas fa-comments"></i> Ask AI Assistant
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         {% endif %}
 
         <div class="report-footer">

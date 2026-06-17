@@ -1,88 +1,76 @@
 {% extends "admin/base_admin.html" %}
 {% block page_title %}Doctor Management{% endblock %}
+{% block page_subtitle %}Manage specialist availability, consultation details, and active doctor profiles.{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <span class="text-muted" style="font-size: 0.85rem;">{{ doctors | length }} doctors registered</span>
-  <button class="btn btn-admin btn-primary-admin" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
-    <i class="fas fa-plus me-1"></i> Add Doctor
-  </button>
+<div class="admin-table-toolbar data-card mb-3">
+  <div><h6 class="admin-table-title">Clinical specialists</h6><div class="admin-toolbar-meta">{{ doctors | length }} doctors registered</div></div>
+  <button class="btn btn-admin btn-primary-admin" data-bs-toggle="modal" data-bs-target="#addDoctorModal"><i class="fas fa-plus me-1"></i> Add Doctor</button>
 </div>
 
 <div class="data-card">
   <div class="card-body p-0">
     <table class="admin-table">
-      <thead>
-        <tr><th>#</th><th>Doctor</th><th>Specialization</th><th>Qualification</th><th>Exp</th><th>Fee</th><th>Hospital</th><th>Status</th><th>Actions</th></tr>
-      </thead>
+      <thead><tr><th>ID</th><th>Doctor</th><th>Specialization</th><th>Experience</th><th>Fee</th><th>Hospital</th><th>Status</th><th>Actions</th></tr></thead>
       <tbody>
         {% for doc in doctors %}
         <tr>
-          <td>{{ doc.doctor_id }}</td>
-          <td><strong>Dr. {{ doc.name }}</strong><br><small class="text-muted">{{ doc.phone or '' }}</small></td>
-          <td>{{ doc.specialization }}</td>
-          <td><small>{{ doc.qualification or '—' }}</small></td>
-          <td>{{ doc.experience_years or '—' }} yrs</td>
-          <td>₹{{ doc.consultation_fee or '—' }}</td>
-          <td><small>{{ doc.hospital or '—' }}</small></td>
+          <td><span class="admin-id">#{{ doc.doctor_id }}</span></td>
+          <td><div class="identity-cell"><div class="identity-avatar">{{ doc.name[0] | upper if doc.name else 'D' }}</div><div><div class="identity-title">Dr. {{ doc.name }}</div><div class="identity-subtitle">{{ doc.phone or doc.email or 'Contact N/A' }}</div></div></div></td>
+          <td><strong>{{ doc.specialization }}</strong><br><span class="admin-muted">{{ doc.qualification or 'Qualification N/A' }}</span></td>
+          <td class="admin-nowrap">{{ doc.experience_years or '-' }} yrs</td>
+          <td class="admin-nowrap">Rs. {{ doc.consultation_fee or '-' }}</td>
+          <td class="admin-text-cell"><div class="admin-clamp">{{ doc.hospital or '-' }}</div></td>
           <td>{% if doc.is_active %}<span class="badge-success">Active</span>{% else %}<span class="badge-danger">Inactive</span>{% endif %}</td>
-          <td>
-            <button class="btn btn-admin btn-edit" data-bs-toggle="modal" data-bs-target="#editDoc{{ doc.doctor_id }}"><i class="fas fa-edit"></i></button>
-            <form method="POST" action="{{ url_for('admin.delete_doctor', doctor_id=doc.doctor_id) }}" style="display:inline;" onsubmit="return confirm('Delete Dr. {{ doc.name }}?')">
-              <button class="btn btn-admin btn-danger-admin"><i class="fas fa-trash"></i></button>
-            </form>
-          </td>
+          <td><div class="admin-actions"><button class="btn btn-admin btn-edit" title="Edit doctor" data-bs-toggle="modal" data-bs-target="#editDoc{{ doc.doctor_id }}"><i class="fas fa-edit"></i></button><form method="POST" action="{{ url_for('admin.delete_doctor', doctor_id=doc.doctor_id) }}" style="display:inline;" onsubmit="return confirm('Delete Dr. {{ doc.name }}?')"><button class="btn btn-admin btn-danger-admin" title="Delete doctor"><i class="fas fa-trash"></i></button></form></div></td>
         </tr>
-
-        <!-- Edit Modal -->
-        <div class="modal fade" id="editDoc{{ doc.doctor_id }}" tabindex="-1">
-          <div class="modal-dialog modal-lg"><div class="modal-content">
-            <div class="modal-header"><h6 class="modal-title">Edit Dr. {{ doc.name }}</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-            <form method="POST" action="{{ url_for('admin.edit_doctor', doctor_id=doc.doctor_id) }}" class="needs-validation" novalidate>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-6 mb-3"><label class="form-label fw-bold">Name</label><input type="text" class="form-control" name="name" value="{{ doc.name }}" required pattern="^[a-zA-Z\s.\-]{2,}$"><div class="invalid-feedback">Letters, spaces, dots, hyphens only</div></div>
-                  <div class="col-md-6 mb-3"><label class="form-label fw-bold">Specialization</label><input type="text" class="form-control" name="specialization" value="{{ doc.specialization }}" required></div>
-                  <div class="col-md-6 mb-3"><label class="form-label fw-bold">Qualification</label><input type="text" class="form-control" name="qualification" value="{{ doc.qualification or '' }}" placeholder="e.g. MBBS, MD Cardiology"></div>
-                  <div class="col-md-3 mb-3"><label class="form-label fw-bold">Experience (yrs)</label><input type="number" class="form-control" name="experience_years" value="{{ doc.experience_years or '' }}" min="0" max="60"></div>
-                  <div class="col-md-3 mb-3"><label class="form-label fw-bold">Fee (₹)</label><input type="number" class="form-control" name="consultation_fee" value="{{ doc.consultation_fee or '' }}" min="0"></div>
-                  <div class="col-md-6 mb-3"><label class="form-label fw-bold">Hospital</label><input type="text" class="form-control" name="hospital" value="{{ doc.hospital or '' }}"></div>
-                  <div class="col-md-3 mb-3"><label class="form-label fw-bold">Phone</label><input type="tel" class="form-control" name="phone" value="{{ doc.phone or '' }}" pattern="^[\d]{10}$"><div class="invalid-feedback">Must be 10 digits</div></div>
-                  <div class="col-md-3 mb-3"><label class="form-label fw-bold">Email</label><input type="email" class="form-control" name="email" value="{{ doc.email or '' }}" pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"><div class="invalid-feedback">Enter a valid email</div></div>
-                  <div class="col-md-6 mb-3"><label class="form-label fw-bold">Available Days</label><input type="text" class="form-control" name="available_days" value="{{ doc.available_days or '' }}"></div>
-                  <div class="col-12 mb-3"><label class="form-label fw-bold">Bio</label><textarea class="form-control" name="bio" rows="2">{{ doc.bio or '' }}</textarea></div>
-                  <div class="col-12"><div class="form-check"><input type="checkbox" class="form-check-input" name="is_active" id="active{{ doc.doctor_id }}" {% if doc.is_active %}checked{% endif %}><label class="form-check-label" for="active{{ doc.doctor_id }}">Active</label></div></div>
-                </div>
-              </div>
-              <div class="modal-footer"><button type="submit" class="btn btn-admin btn-primary-admin">Save Changes</button></div>
-            </form>
-          </div></div>
-        </div>
         {% endfor %}
+        {% if not doctors %}<tr><td colspan="8"><div class="admin-empty-state"><i class="fas fa-user-md"></i><h6>No doctors yet</h6><p class="mb-0">Add specialists so patients can book appointments.</p></div></td></tr>{% endif %}
       </tbody>
     </table>
   </div>
 </div>
 
-<!-- Add Doctor Modal -->
+{% for doc in doctors %}
+<div class="modal fade" id="editDoc{{ doc.doctor_id }}" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
+    <div class="modal-header"><h6 class="modal-title">Edit Dr. {{ doc.name }}</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <form method="POST" action="{{ url_for('admin.edit_doctor', doctor_id=doc.doctor_id) }}" class="needs-validation" novalidate>
+      <div class="modal-body"><div class="admin-form-grid">
+        <div class="span-6"><label class="form-label">Name</label><input type="text" class="form-control" name="name" value="{{ doc.name }}" placeholder="e.g. Anjali Sharma" required pattern="^[a-zA-Z\s.\-]{2,}$"><div class="invalid-feedback">Letters, spaces, dots, hyphens only</div></div>
+        <div class="span-6"><label class="form-label">Specialization</label><input type="text" class="form-control" name="specialization" value="{{ doc.specialization }}" placeholder="e.g. Cardiology" required></div>
+        <div class="span-6"><label class="form-label">Qualification</label><input type="text" class="form-control" name="qualification" value="{{ doc.qualification or '' }}" placeholder="e.g. MBBS, MD Cardiology"></div>
+        <div class="span-3"><label class="form-label">Experience</label><input type="number" class="form-control" name="experience_years" value="{{ doc.experience_years or '' }}" placeholder="e.g. 8" min="0" max="60"></div>
+        <div class="span-3"><label class="form-label">Fee (Rs.)</label><input type="number" class="form-control" name="consultation_fee" value="{{ doc.consultation_fee or '' }}" placeholder="e.g. 500" min="0"></div>
+        <div class="span-6"><label class="form-label">Hospital</label><input type="text" class="form-control" name="hospital" value="{{ doc.hospital or '' }}" placeholder="e.g. Medilife Clinic"></div>
+        <div class="span-3"><label class="form-label">Phone</label><input type="tel" class="form-control" name="phone" value="{{ doc.phone or '' }}" placeholder="e.g. 9876543210" pattern="^[\d]{10}$"><div class="invalid-feedback">Must be 10 digits</div></div>
+        <div class="span-3"><label class="form-label">Email</label><input type="email" class="form-control" name="email" value="{{ doc.email or '' }}" placeholder="e.g. doctor@example.com" pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"><div class="invalid-feedback">Enter a valid email</div></div>
+        <div class="span-6"><label class="form-label">Available Days</label><input type="text" class="form-control" name="available_days" value="{{ doc.available_days or '' }}" placeholder="e.g. Mon,Tue,Wed"></div>
+        <div class="span-12"><label class="form-label">Bio</label><textarea class="form-control" name="bio" rows="3" placeholder="e.g. Specialist with 8 years of clinical experience.">{{ doc.bio or '' }}</textarea></div>
+        <div class="span-12"><div class="form-check"><input type="checkbox" class="form-check-input" name="is_active" id="active{{ doc.doctor_id }}" {% if doc.is_active %}checked{% endif %}><label class="form-check-label" for="active{{ doc.doctor_id }}">Active doctor profile</label></div></div>
+      </div></div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-premium" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-admin btn-primary-admin">Save Changes</button></div>
+    </form>
+  </div></div>
+</div>
+{% endfor %}
+
 <div class="modal fade" id="addDoctorModal" tabindex="-1">
-  <div class="modal-dialog modal-lg"><div class="modal-content">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable"><div class="modal-content">
     <div class="modal-header"><h6 class="modal-title">Add New Doctor</h6><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
     <form method="POST" action="{{ url_for('admin.add_doctor') }}" class="needs-validation" novalidate>
-      <div class="modal-body">
-        <div class="row">
-          <div class="col-md-6 mb-3"><label class="form-label fw-bold">Name *</label><input type="text" class="form-control" name="name" required pattern="^[a-zA-Z\s.\-]{2,}$"><div class="invalid-feedback">Letters, spaces, dots, hyphens only (min 2)</div></div>
-          <div class="col-md-6 mb-3"><label class="form-label fw-bold">Specialization *</label><input type="text" class="form-control" name="specialization" required></div>
-          <div class="col-md-6 mb-3"><label class="form-label fw-bold">Qualification</label><input type="text" class="form-control" name="qualification" placeholder="e.g. MBBS, MD Cardiology"></div>
-          <div class="col-md-3 mb-3"><label class="form-label fw-bold">Experience (yrs)</label><input type="number" class="form-control" name="experience_years" min="0" max="60"></div>
-          <div class="col-md-3 mb-3"><label class="form-label fw-bold">Fee (₹)</label><input type="number" class="form-control" name="consultation_fee" min="0"></div>
-          <div class="col-md-6 mb-3"><label class="form-label fw-bold">Hospital</label><input type="text" class="form-control" name="hospital"></div>
-          <div class="col-md-3 mb-3"><label class="form-label fw-bold">Phone</label><input type="tel" class="form-control" name="phone" pattern="^[\d]{10}$"><div class="invalid-feedback">Must be 10 digits</div></div>
-          <div class="col-md-3 mb-3"><label class="form-label fw-bold">Email</label><input type="email" class="form-control" name="email" pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"><div class="invalid-feedback">Enter a valid email</div></div>
-          <div class="col-md-6 mb-3"><label class="form-label fw-bold">Available Days</label><input type="text" class="form-control" name="available_days" placeholder="Mon,Tue,Wed,Thu,Fri"></div>
-          <div class="col-12 mb-3"><label class="form-label fw-bold">Bio</label><textarea class="form-control" name="bio" rows="2" placeholder="Brief description about the doctor"></textarea></div>
-        </div>
-      </div>
-      <div class="modal-footer"><button type="submit" class="btn btn-admin btn-primary-admin">Add Doctor</button></div>
+      <div class="modal-body"><div class="admin-form-grid">
+        <div class="span-6"><label class="form-label">Name *</label><input type="text" class="form-control" name="name" placeholder="e.g. Anjali Sharma" required pattern="^[a-zA-Z\s.\-]{2,}$"><div class="invalid-feedback">Letters, spaces, dots, hyphens only (min 2)</div></div>
+        <div class="span-6"><label class="form-label">Specialization *</label><input type="text" class="form-control" name="specialization" placeholder="e.g. Cardiology" required></div>
+        <div class="span-6"><label class="form-label">Qualification</label><input type="text" class="form-control" name="qualification" placeholder="e.g. MBBS, MD Cardiology"></div>
+        <div class="span-3"><label class="form-label">Experience</label><input type="number" class="form-control" name="experience_years" placeholder="e.g. 8" min="0" max="60"></div>
+        <div class="span-3"><label class="form-label">Fee (Rs.)</label><input type="number" class="form-control" name="consultation_fee" placeholder="e.g. 500" min="0"></div>
+        <div class="span-6"><label class="form-label">Hospital</label><input type="text" class="form-control" name="hospital" placeholder="e.g. Medilife Clinic"></div>
+        <div class="span-3"><label class="form-label">Phone</label><input type="tel" class="form-control" name="phone" placeholder="e.g. 9876543210" pattern="^[\d]{10}$"><div class="invalid-feedback">Must be 10 digits</div></div>
+        <div class="span-3"><label class="form-label">Email</label><input type="email" class="form-control" name="email" placeholder="e.g. doctor@example.com" pattern="^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$"><div class="invalid-feedback">Enter a valid email</div></div>
+        <div class="span-6"><label class="form-label">Available Days</label><input type="text" class="form-control" name="available_days" placeholder="e.g. Mon,Tue,Wed,Thu,Fri"></div>
+        <div class="span-12"><label class="form-label">Bio</label><textarea class="form-control" name="bio" rows="3" placeholder="e.g. Specialist with 8 years of clinical experience."></textarea></div>
+      </div></div>
+      <div class="modal-footer"><button type="button" class="btn btn-outline-premium" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-admin btn-primary-admin">Add Doctor</button></div>
     </form>
   </div></div>
 </div>

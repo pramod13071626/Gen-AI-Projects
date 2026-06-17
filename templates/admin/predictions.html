@@ -1,26 +1,39 @@
 {% extends "admin/base_admin.html" %}
 {% block page_title %}Predictions{% endblock %}
+{% block page_subtitle %}Audit AI screening results by user, risk level, confidence, and date.{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <span class="text-muted" style="font-size: 0.85rem;">{{ predictions | length }} total predictions across {{ grouped | length }} users</span>
+<div class="admin-table-toolbar data-card mb-3">
+  <div>
+    <h6 class="admin-table-title">Prediction history</h6>
+    <div class="admin-toolbar-meta">{{ predictions | length }} predictions across {{ grouped | length }} users</div>
+  </div>
 </div>
 
 {% for user_name, user_preds in grouped.items() %}
 <div class="data-card mb-4">
   <div class="card-header">
-    <h6><i class="fas fa-user me-2"></i>{{ user_name }} <span class="badge-info ms-2">{{ user_preds | length }} tests</span></h6>
+    <h6><i class="fas fa-user me-2"></i>{{ user_name }}</h6>
+    <span class="badge-info">{{ user_preds | length }} tests</span>
   </div>
   <div class="card-body p-0">
     <table class="admin-table">
-      <thead><tr><th>Disease</th><th>Result</th><th>Confidence</th><th>Risk Level</th><th>Date</th></tr></thead>
+      <thead>
+        <tr><th>Disease</th><th>Result</th><th>Confidence</th><th>Risk Level</th><th>Date</th></tr>
+      </thead>
       <tbody>
         {% for p in user_preds %}
         <tr>
-          <td style="text-transform: capitalize;"><strong>{{ p.disease_name }}</strong></td>
+          <td><strong class="text-capitalize">{{ p.disease_name }}</strong></td>
           <td>{% if p.prediction_result == '1' %}<span class="badge-danger">Positive</span>{% else %}<span class="badge-success">Negative</span>{% endif %}</td>
-          <td>{{ "%.0f" | format(p.confidence_score) if p.confidence_score else 'N/A' }}%</td>
-          <td>{% if p.risk_level == 'high' %}<span class="badge-danger">High</span>{% elif p.risk_level == 'moderate' %}<span class="badge-warning">Moderate</span>{% else %}<span class="badge-success">Low</span>{% endif %}</td>
-          <td><small>{{ p.prediction_date.strftime('%d %b %Y %H:%M') }}</small></td>
+          <td>
+            {% set conf = p.confidence_score or 0 %}
+            <div class="d-flex align-items-center gap-2">
+              <div class="admin-progress"><span style="width: {{ conf }}%;"></span></div>
+              <strong>{{ "%.0f" | format(conf) }}%</strong>
+            </div>
+          </td>
+          <td>{% if p.risk_level == 'high' %}<span class="badge-danger">High</span>{% elif p.risk_level == 'moderate' %}<span class="badge-warning">Moderate</span>{% elif p.risk_level == 'low-moderate' %}<span class="badge-warning">Low moderate</span>{% else %}<span class="badge-success">Low</span>{% endif %}</td>
+          <td class="admin-nowrap"><small>{{ p.prediction_date.strftime('%d %b %Y, %H:%M') }}</small></td>
         </tr>
         {% endfor %}
       </tbody>
@@ -30,6 +43,6 @@
 {% endfor %}
 
 {% if not grouped %}
-<div class="data-card"><div class="card-body text-center text-muted py-4">No predictions yet.</div></div>
+<div class="data-card"><div class="admin-empty-state"><i class="fas fa-chart-line"></i><h6>No predictions yet</h6><p class="mb-0">Prediction records will appear here after users complete screenings.</p></div></div>
 {% endif %}
 {% endblock %}

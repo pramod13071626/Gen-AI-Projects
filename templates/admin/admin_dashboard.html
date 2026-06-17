@@ -1,129 +1,112 @@
 {% extends "admin/base_admin.html" %}
-{% block page_title %}Dashboard{% endblock %}
+{% block page_title %}Analytics Dashboard{% endblock %}
+{% block page_subtitle %}A high-level command center for diagnostics, operations, and model activity.{% endblock %}
 {% block content %}
-<!-- KPI Cards Row 1 -->
-<div class="row g-3 mb-3">
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Users</div><div class="kpi-value">{{ total_users }}</div></div>
-        <div class="kpi-icon" style="background:#dbeafe;"><i class="fas fa-users" style="color:#2563eb;"></i></div>
-      </div>
+<div class="premium-card p-4 mb-4" style="background:var(--ml-gradient-primary)!important;color:#fff!important;">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <div>
+      <span class="premium-badge mb-3" style="background:rgba(255,255,255,0.14);color:#fff;border-color:rgba(255,255,255,0.22);">Enterprise overview</span>
+      <h2 class="text-white mb-1">Medilife command center</h2>
+      <p class="mb-0" style="color:rgba(255,255,255,0.78);">Monitor users, predictions, appointments, complaints, and model operations from one place.</p>
     </div>
-  </div>
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Predictions</div><div class="kpi-value">{{ total_predictions }}</div></div>
-        <div class="kpi-icon" style="background:#dcfce7;"><i class="fas fa-chart-line" style="color:#16a34a;"></i></div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Doctors</div><div class="kpi-value">{{ total_doctors }}</div></div>
-        <div class="kpi-icon" style="background:#fef3c7;"><i class="fas fa-user-md" style="color:#d97706;"></i></div>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Appointments</div><div class="kpi-value">{{ total_appointments }}</div></div>
-        <div class="kpi-icon" style="background:#e0e7ff;"><i class="fas fa-calendar-check" style="color:#4f46e5;"></i></div>
-      </div>
-    </div>
+    <form method="POST" action="{{ url_for('admin.trigger_retrain') }}">
+      <button type="submit" class="btn btn-light rounded-pill px-4" id="retrainBtn">
+        <i class="fas fa-sync-alt me-2"></i>Retrain Models
+      </button>
+    </form>
   </div>
 </div>
 
-<!-- KPI Cards Row 2 -->
 <div class="row g-3 mb-4">
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Positive Cases</div><div class="kpi-value" style="color:#dc2626;">{{ positive_count }}</div></div>
-        <div class="kpi-icon" style="background:#fee2e2;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i></div>
-      </div>
-    </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Total Users</div><div class="kpi-value">{{ total_users }}</div></div><div class="kpi-icon" style="background:#dbeafe;"><i class="fas fa-users" style="color:#2563eb;"></i></div></div></div>
   </div>
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Chat Sessions</div><div class="kpi-value">{{ total_chats }}</div></div>
-        <div class="kpi-icon" style="background:#fef3c7;"><i class="fas fa-comments" style="color:#d97706;"></i></div>
-      </div>
-    </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Predictions</div><div class="kpi-value">{{ total_predictions }}</div></div><div class="kpi-icon" style="background:#dcfce7;"><i class="fas fa-chart-line" style="color:#16a34a;"></i></div></div></div>
   </div>
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Complaints</div><div class="kpi-value">{{ total_complaints }}</div></div>
-        <div class="kpi-icon" style="background:#fee2e2;"><i class="fas fa-ticket-alt" style="color:#dc2626;"></i></div>
-      </div>
-    </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Doctors</div><div class="kpi-value">{{ total_doctors }}</div></div><div class="kpi-icon" style="background:#fef3c7;"><i class="fas fa-user-md" style="color:#d97706;"></i></div></div></div>
   </div>
-  <div class="col-md-3 col-6">
-    <div class="kpi-card">
-      <div class="d-flex justify-content-between align-items-start">
-        <div><div class="kpi-label">Detection Rate</div><div class="kpi-value">{% if total_predictions > 0 %}{{ "%.0f" | format(positive_count * 100 / total_predictions) }}%{% else %}0%{% endif %}</div></div>
-        <div class="kpi-icon" style="background:#dcfce7;"><i class="fas fa-percentage" style="color:#16a34a;"></i></div>
-      </div>
-    </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Appointments</div><div class="kpi-value">{{ total_appointments }}</div></div><div class="kpi-icon" style="background:#e0e7ff;"><i class="fas fa-calendar-check" style="color:#4f46e5;"></i></div></div></div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Positive Cases</div><div class="kpi-value" style="color:#dc2626;">{{ positive_count }}</div></div><div class="kpi-icon" style="background:#fee2e2;"><i class="fas fa-triangle-exclamation" style="color:#dc2626;"></i></div></div></div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Chat Sessions</div><div class="kpi-value">{{ total_chats }}</div></div><div class="kpi-icon" style="background:#ecfeff;"><i class="fas fa-comments" style="color:#0891b2;"></i></div></div></div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Complaints</div><div class="kpi-value">{{ total_complaints }}</div></div><div class="kpi-icon" style="background:#fff7ed;"><i class="fas fa-ticket-alt" style="color:#ea580c;"></i></div></div></div>
+  </div>
+  <div class="col-xl-3 col-md-6">
+    <div class="kpi-card"><div class="d-flex justify-content-between align-items-start"><div><div class="kpi-label">Detection Rate</div><div class="kpi-value">{% if total_predictions > 0 %}{{ "%.0f" | format(positive_count * 100 / total_predictions) }}%{% else %}0%{% endif %}</div></div><div class="kpi-icon" style="background:#dcfce7;"><i class="fas fa-percent" style="color:#16a34a;"></i></div></div></div>
   </div>
 </div>
 
 <div class="row g-4">
-  <!-- Disease Chart (small) -->
-  <div class="col-lg-4">
-    <div class="data-card">
+  <div class="col-xl-4">
+    <div class="data-card h-100">
       <div class="card-header"><h6><i class="fas fa-chart-pie me-2"></i>Disease Distribution</h6></div>
-      <div class="card-body" style="padding: 15px;"><canvas id="diseaseChart" height="180"></canvas></div>
+      <div class="card-body"><canvas id="diseaseChart" height="220"></canvas></div>
     </div>
   </div>
-
-  <!-- Bar Chart (small) -->
-  <div class="col-lg-4">
-    <div class="data-card">
-      <div class="card-header"><h6><i class="fas fa-chart-bar me-2"></i>Positive vs Negative</h6></div>
-      <div class="card-body" style="padding: 15px;"><canvas id="barChart" height="180"></canvas></div>
+  <div class="col-xl-5">
+    <div class="data-card h-100">
+      <div class="card-header"><h6><i class="fas fa-chart-column me-2"></i>Positive vs Negative</h6></div>
+      <div class="card-body"><canvas id="barChart" height="220"></canvas></div>
     </div>
   </div>
-
-  <!-- Model Retraining -->
-  <div class="col-lg-4">
-    <div class="data-card">
-      <div class="card-header"><h6><i class="fas fa-brain me-2"></i>Model Retraining</h6></div>
-      <div class="card-body" style="padding: 20px;">
-        <p style="font-size:0.85rem; color:#666; margin-bottom:15px;">Retrain ML models using prediction data collected from users.</p>
-        <form method="POST" action="{{ url_for('admin.trigger_retrain') }}">
-          <button type="submit" class="btn btn-primary w-100" id="retrainBtn">
-            <i class="fas fa-sync-alt me-1"></i> Retrain All Models
-          </button>
-        </form>
-        <div id="retrainStatus" style="margin-top:12px; font-size:0.8rem;"></div>
+  <div class="col-xl-3">
+    <div class="data-card h-100">
+      <div class="card-header"><h6><i class="fas fa-brain me-2"></i>ML Operations</h6></div>
+      <div class="card-body">
+        <div class="badge-info mb-3 d-inline-flex">Model health: ready</div>
+        <p class="small">Retrain ML models with user prediction data and monitor the latest run status.</p>
+        <div id="retrainStatus" class="small"></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Recent Users -->
 <div class="row g-4 mt-1">
-  <div class="col-lg-6">
+  <div class="col-xl-7">
     <div class="data-card">
       <div class="card-header">
         <h6><i class="fas fa-user-clock me-2"></i>Recent Users</h6>
-        <a href="{{ url_for('admin.users') }}" style="font-size:0.75rem; color:#3b82f6; text-decoration:none;">View All →</a>
+        <a href="{{ url_for('admin.users') }}" class="text-decoration-none small fw-bold">View All</a>
       </div>
       <div class="card-body p-0">
         <table class="admin-table">
-          <thead><tr><th>Name</th><th>Joined</th></tr></thead>
+          <thead><tr><th>User</th><th>Role</th><th>Joined</th></tr></thead>
           <tbody>
             {% for user in recent_users %}
-            <tr><td><strong>{{ user.full_name }}</strong><br><small class="text-muted">{{ user.email }}</small></td><td><small>{{ user.created_at.strftime('%d %b') }}</small></td></tr>
+            <tr>
+              <td>
+                <div class="identity-cell">
+                  <div class="identity-avatar">{{ user.full_name[0] | upper if user.full_name else 'U' }}</div>
+                  <div><div class="identity-title">{{ user.full_name }}</div><div class="identity-subtitle">{{ user.email }}</div></div>
+                </div>
+              </td>
+              <td><span class="badge-info">{{ 'Admin' if user.is_admin else 'User' }}</span></td>
+              <td class="admin-nowrap"><small>{{ user.created_at.strftime('%d %b %Y') }}</small></td>
+            </tr>
             {% endfor %}
+            {% if not recent_users %}<tr><td colspan="3"><div class="admin-empty-state"><i class="fas fa-users"></i><h6>No recent users</h6><p class="mb-0">New registrations will show here.</p></div></td></tr>{% endif %}
           </tbody>
         </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-5">
+    <div class="premium-card p-4 h-100">
+      <span class="section-eyebrow">Operational focus</span>
+      <h4 class="mt-3">Admin actions</h4>
+      <div class="d-grid gap-2 mt-3">
+        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-premium text-start"><i class="fas fa-users me-2"></i>Manage users</a>
+        <a href="{{ url_for('admin.doctors') }}" class="btn btn-outline-premium text-start"><i class="fas fa-user-md me-2"></i>Manage doctors</a>
+        <a href="{{ url_for('admin.admin_appointments') }}" class="btn btn-outline-premium text-start"><i class="fas fa-calendar-check me-2"></i>Review appointments</a>
+        <a href="{{ url_for('admin.complaints') }}" class="btn btn-outline-premium text-start"><i class="fas fa-ticket-alt me-2"></i>Resolve complaints</a>
       </div>
     </div>
   </div>
@@ -136,12 +119,12 @@ const stats = {{ disease_stats | tojson }};
 const posNeg = {{ disease_pos_neg | tojson }};
 const labels = Object.keys(stats).map(s => s.charAt(0).toUpperCase() + s.slice(1));
 const values = Object.values(stats);
-const colors = ['#3b82f6','#ef4444','#f59e0b','#10b981','#8b5cf6','#ec4899','#06b6d4'];
+const colors = ['#0f3f8c','#dc2626','#f59e0b','#16a34a','#7c3aed','#c2185b','#0891b2'];
 
 new Chart(document.getElementById('diseaseChart'), {
   type: 'doughnut',
-  data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0 }] },
-  options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 10 } } } } }
+  data: { labels, datasets: [{ data: values, backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }] },
+  options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { padding: 12 } } }, cutout: '62%' }
 });
 
 new Chart(document.getElementById('barChart'), {
@@ -149,27 +132,28 @@ new Chart(document.getElementById('barChart'), {
   data: {
     labels,
     datasets: [
-      { label: 'Positive', data: labels.map(l => (posNeg[l.toLowerCase()] || {}).positive || 0), backgroundColor: '#ef4444', borderRadius: 4 },
-      { label: 'Negative', data: labels.map(l => (posNeg[l.toLowerCase()] || {}).negative || 0), backgroundColor: '#10b981', borderRadius: 4 }
+      { label: 'Positive', data: labels.map(l => (posNeg[l.toLowerCase()] || {}).positive || 0), backgroundColor: '#dc2626', borderRadius: 8 },
+      { label: 'Negative', data: labels.map(l => (posNeg[l.toLowerCase()] || {}).negative || 0), backgroundColor: '#16a34a', borderRadius: 8 }
     ]
   },
-  options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 8, font: { size: 10 } } } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 9 } } }, y: { beginAtZero: true, stacked: true, grid: { color: '#f1f5f9' } }, x: { stacked: true, grid: { display: false }, ticks: { font: { size: 9 } } } } }
+  options: { responsive: true, plugins: { legend: { position: 'bottom' } }, scales: { y: { beginAtZero: true, grid: { color: '#e8eef6' } }, x: { stacked: true, grid: { display: false } } } }
 });
 
-// Poll retrain status
 function checkRetrain() {
   fetch('/admin/retrain/status').then(r => r.json()).then(d => {
     const el = document.getElementById('retrainStatus');
     if (d.running) {
-      el.innerHTML = '<span style="color:#f59e0b;"><i class="fas fa-spinner fa-spin"></i> Retraining in progress...</span>';
+      el.innerHTML = '<span class="badge-warning"><i class="fas fa-spinner fa-spin me-1"></i>Retraining in progress</span>';
       setTimeout(checkRetrain, 3000);
     } else if (d.last_run) {
-      let html = '<span style="color:#16a34a;">Last run: ' + d.last_run + '</span><br>';
+      let html = '<div class="fw-bold mb-2">Last run: ' + d.last_run + '</div>';
       for (const [name, res] of Object.entries(d.results || {})) {
-        const icon = res.status === 'success' ? '✅' : res.status === 'skipped' ? '⏭️' : '❌';
-        html += icon + ' ' + name + ': ' + (res.accuracy ? res.accuracy + '% (' + res.samples + ' samples)' : res.reason) + '<br>';
+        const cls = res.status === 'success' ? 'badge-success' : res.status === 'skipped' ? 'badge-warning' : 'badge-danger';
+        html += '<div class="mb-2"><span class="'+cls+'">'+res.status+'</span> <strong>' + name + '</strong><br><span class="text-muted">' + (res.accuracy ? res.accuracy + '% accuracy, ' + res.samples + ' samples' : res.reason) + '</span></div>';
       }
       el.innerHTML = html;
+    } else {
+      el.innerHTML = '<span class="text-muted">No retraining run recorded yet.</span>';
     }
   }).catch(() => {});
 }
